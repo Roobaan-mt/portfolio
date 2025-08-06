@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roobaan M T - Premium Portfolio</title>
+  <meta name="description" content="Premium portfolio of Roobaan M T, a mobile app developer specializing in Flutter and iOS development.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script>
+    // Check for saved theme or use system preference
+    const savedTheme = localStorage.getItem('theme') || 
+      (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    // Apply theme to document immediately to avoid flash of incorrect theme
+    if (savedTheme === 'dark') {
+      document.documentElement.classList.add('dark');
+    }
+  </script>
+  <!-- Critical CSS to avoid layout shifts -->
+  <style>
+    /* Minimal critical CSS for initial render */
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Montserrat', system-ui, sans-serif;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .dark {
+      background-color: #121212;
+      color: #f8f8ff;
+    }
+    #root {
+      min-height: 100vh;
+      width: 100%;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .initial-loader {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #fff;
+      z-index: 9999;
+      transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .dark .initial-loader {
+      background-color: #121212;
+    }
+    .initial-loader__spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(90, 59, 148, 0.2);
+      border-top-color: #5a3b94;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    .dark .initial-loader__spinner {
+      border: 4px solid rgba(212, 175, 55, 0.2);
+      border-top-color: #d4af37;
+    }
+  </style>
+</head>
+<body>
+  <!-- Initial loading spinner -->
+  <div class="initial-loader" id="initial-loader">
+    <div class="initial-loader__spinner"></div>
+  </div>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+  <script>
+    // Show body content once it's loaded
+    window.addEventListener('DOMContentLoaded', function() {
+      document.body.style.opacity = '1';
+    });
+    // Hide initial loader after content is loaded
+    window.addEventListener('load', function() {
+      const loader = document.getElementById('initial-loader');
+      if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => {
+          loader.style.visibility = 'hidden';
+        }, 500);
+      }
+    });
+  </script>
+</body>
+</html>

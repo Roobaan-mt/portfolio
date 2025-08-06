@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef, lazy, memo } from 'react';
 import { ArrowDownIcon, GithubIcon, LinkedinIcon } from 'lucide-react';
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
@@ -9,6 +9,30 @@ const Hero = () => {
   const delayBetweenPhrases = 1000;
   const [isDeleting, setIsDeleting] = useState(false);
   const [typingDelay, setTypingDelay] = useState(typingSpeed);
+  const profileRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const heroRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
+  const ticking = useRef(false);
+  const lastScrollY = useRef(0);
+  // Detect when hero section enters viewport
+  useEffect(() => {
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0].isIntersecting && !isVisible) {
+        setIsVisible(true);
+        // Start staggered animations after hero is visible
+        setTimeout(() => setAnimationStarted(true), 100);
+      }
+    }, {
+      threshold: 0.1
+    });
+    if (heroRef.current) {
+      observer.observe(heroRef.current);
+    }
+    return () => observer.disconnect();
+  }, [isVisible]);
+  // Optimized typing effect
   useEffect(() => {
     const timer = setTimeout(() => {
       const currentPhrase = phrases[currentIndex];
@@ -32,62 +56,181 @@ const Hero = () => {
       }
     }, typingDelay);
     return () => clearTimeout(timer);
-  }, [displayText, currentIndex, isDeleting]);
-  return <section id="hero" className="pt-24 md:pt-32 pb-16 md:pb-24 bg-gradient-to-br from-indigo-50 to-blue-50 dark:from-gray-900 dark:to-gray-800 w-full transition-colors duration-500">
-      <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center">
-        <div className="md:w-1/2 mb-10 md:mb-0 animate-slide-up">
-          <p className="text-indigo-600 dark:text-indigo-400 font-semibold mb-2">
+  }, [displayText, currentIndex, isDeleting, phrases, typingSpeed, deletingSpeed, delayBetweenPhrases]);
+  // Optimized parallax effect with requestAnimationFrame
+  const handleScroll = useCallback(() => {
+    if (!ticking.current) {
+      // Use requestAnimationFrame to limit updates
+      requestAnimationFrame(() => {
+        if (profileRef.current && contentRef.current) {
+          const scrollValue = window.scrollY;
+          // Only update if scroll position changed significantly
+          if (Math.abs(scrollValue - lastScrollY.current) > 5) {
+            // Use transform for GPU acceleration
+            profileRef.current.style.transform = `translateY(${scrollValue * 0.08}px) rotateZ(${scrollValue * 0.008}deg)`;
+            contentRef.current.style.transform = `translateY(${scrollValue * 0.04}px)`;
+            lastScrollY.current = scrollValue;
+          }
+        }
+        ticking.current = false;
+      });
+      ticking.current = true;
+    }
+  }, []);
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll, {
+      passive: true
+    });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, [handleScroll]);
+  return <section id="hero" ref={heroRef} className="relative pt-32 md:pt-40 pb-16 md:pb-32 w-full overflow-hidden">
+      {/* Animated gradient overlay */}
+      <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple-light/10 to-royal-blue-light/10 dark:from-royal-purple-dark/20 dark:to-royal-blue-dark/20 z-0 transition-opacity duration-1500 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{
+      backgroundSize: '200% 200%',
+      animation: isVisible ? 'gradientFlow 15s ease infinite' : 'none',
+      willChange: 'background-position'
+    }}></div>
+      {/* Decorative elements */}
+      <div className={`absolute left-1/4 top-1/4 w-64 h-64 rounded-full bg-royal-gold/5 dark:bg-royal-gold/10 blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      transformOrigin: 'center',
+      animationDelay: '0.3s',
+      willChange: 'transform, opacity'
+    }}></div>
+      <div className={`absolute right-1/4 bottom-1/4 w-80 h-80 rounded-full bg-royal-purple/5 dark:bg-royal-purple/10 blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      transformOrigin: 'center',
+      animationDelay: '0.6s',
+      willChange: 'transform, opacity'
+    }}></div>
+      <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center relative z-10">
+        <div ref={contentRef} className="md:w-1/2 mb-10 md:mb-0" style={{
+        willChange: 'transform'
+      }}>
+          <p className={`text-royal-purple dark:text-royal-gold font-serif font-semibold mb-2 text-lg transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '0.3s',
+          willChange: 'transform, opacity'
+        }}>
             Hello, I'm
           </p>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 dark:text-white mb-4">
+          <h1 className={`text-5xl md:text-6xl lg:text-7xl font-serif font-bold mb-4 gradient-text transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '0.5s',
+          willChange: 'transform, opacity'
+        }}>
             Roobaan M T
           </h1>
-          <div className="text-2xl md:text-3xl text-gray-700 dark:text-gray-300 mb-4 h-10">
+          <div className={`text-2xl md:text-3xl text-gray-800 dark:text-royal-white mb-6 h-10 font-serif transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '0.7s',
+          willChange: 'transform, opacity'
+        }}>
             <span>{displayText}</span>
-            <span className="animate-pulse">|</span>
+            <span className="animate-pulse inline-block w-1 h-6 ml-1 bg-royal-gold"></span>
           </div>
-          <p className="text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-lg">
+          <p className={`text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-lg font-sans leading-relaxed transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '0.9s',
+          willChange: 'transform, opacity'
+        }}>
             Crafting beautiful, intuitive mobile experiences with Flutter and
-            iOS. Turning ideas into user-friendly applications.
+            iOS. Turning ideas into user-friendly applications with royal
+            precision.
           </p>
-          <div className="flex flex-wrap gap-4">
-            <a href="#contact" className="px-6 py-3 bg-indigo-600 dark:bg-indigo-700 text-white font-medium rounded-lg hover:bg-indigo-700 dark:hover:bg-indigo-600 transition-colors hover:scale-105 transform duration-300">
-              Get In Touch
+          <div className={`flex flex-wrap gap-4 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '1.1s',
+          willChange: 'transform, opacity'
+        }}>
+            <a href="#contact" className="px-8 py-4 bg-royal-purple dark:bg-royal-gold text-white dark:text-royal-black font-medium rounded-full hover:shadow-royal dark:hover:shadow-gold transition-all duration-500 transform hover:translate-y-[-5px] hover:scale-105 relative overflow-hidden group" style={{
+            willChange: 'transform, box-shadow'
+          }}>
+              <span className="relative z-10">Get In Touch</span>
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-purple-light to-royal-purple dark:from-royal-gold-light dark:to-royal-gold opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
             </a>
-            <a href="#projects" className="px-6 py-3 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 font-medium rounded-lg hover:border-indigo-600 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hover:scale-105 transform duration-300">
+            <a href="#projects" className="px-8 py-4 border-2 border-royal-purple dark:border-royal-gold text-royal-purple dark:text-royal-gold font-medium rounded-full hover:bg-royal-purple/10 dark:hover:bg-royal-gold/10 transition-all duration-500 transform hover:translate-y-[-5px]" style={{
+            willChange: 'transform'
+          }}>
               View Projects
             </a>
           </div>
-          <div className="flex gap-4 mt-8">
-            <a href="https://github.com/Roobaan" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hover:scale-110 transform duration-300" target="_blank" rel="noopener noreferrer">
-              <GithubIcon size={24} />
+          <div className={`flex gap-6 mt-10 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '1.3s',
+          willChange: 'transform, opacity'
+        }}>
+            <a href="https://github.com/Roobaan" className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
+            willChange: 'transform'
+          }}>
+              <GithubIcon size={28} />
               <span className="sr-only">GitHub</span>
             </a>
-            <a href="https://www.linkedin.com/in/roobaan-m-t-327075214" className="text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hover:scale-110 transform duration-300" target="_blank" rel="noopener noreferrer">
-              <LinkedinIcon size={24} />
+            <a href="https://www.linkedin.com/in/roobaan-m-t-327075214" className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
+            willChange: 'transform'
+          }}>
+              <LinkedinIcon size={28} />
               <span className="sr-only">LinkedIn</span>
             </a>
           </div>
         </div>
-        <div className="md:w-1/2 flex justify-center md:justify-end">
-          <div className="relative animate-float">
-            <div className="w-64 h-64 md:w-80 md:h-80 bg-indigo-600 dark:bg-indigo-700 rounded-full overflow-hidden border-8 border-white dark:border-gray-800 shadow-lg hover:scale-105 transform transition-transform duration-500">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Profile" className="w-full h-full object-cover" />
+        <div className={`md:w-1/2 flex justify-center md:justify-end transition-all duration-1500 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`} style={{
+        transitionDelay: '0.6s',
+        willChange: 'transform, opacity'
+      }}>
+          <div ref={profileRef} className="relative" style={{
+          willChange: 'transform'
+        }}>
+            <div className="w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-royal-gold/30 dark:border-royal-gold/20 shadow-royal dark:shadow-gold animate-float transform hover:rotate-3 transition-all duration-1000">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Profile" className="w-full h-full object-cover" loading="lazy" />
+              {/* Shimmering overlay effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
+              {/* Cinematic reveal effect */}
+              <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple to-royal-gold transition-all duration-2000 ease-out ${isVisible ? 'opacity-0' : 'opacity-100'}`} style={{
+              willChange: 'opacity'
+            }}></div>
             </div>
-            <div className="absolute -bottom-4 -right-4 bg-white dark:bg-gray-800 p-4 rounded-lg shadow-lg animate-pulse-slow">
-              <p className="font-bold text-indigo-600 dark:text-indigo-400">
+            <div className={`absolute -bottom-4 -right-4 glass backdrop-blur-md p-4 rounded-lg shadow-elegant animate-pulse-slow transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0 translate-x-0' : 'opacity-0 translate-y-8 translate-x-8'}`} style={{
+            transitionDelay: '1.2s',
+            willChange: 'transform, opacity'
+          }}>
+              <p className="font-serif font-bold text-royal-purple dark:text-royal-gold">
                 4+ Years Experience
               </p>
             </div>
+            {/* Decorative elements with staggered animations */}
+            <div className={`absolute -top-10 -left-10 w-20 h-20 rounded-full bg-royal-gold/20 dark:bg-royal-gold/10 transition-all duration-1500 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{
+            transitionDelay: '1.5s',
+            willChange: 'transform, opacity',
+            animation: animationStarted ? 'pulse 3s ease-in-out infinite' : 'none'
+          }}></div>
+            <div className={`absolute -bottom-10 -left-16 w-16 h-16 rounded-full bg-royal-purple/20 dark:bg-royal-purple/10 transition-all duration-1500 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{
+            transitionDelay: '1.7s',
+            willChange: 'transform, opacity',
+            animation: animationStarted ? 'float 6s ease-in-out infinite' : 'none',
+            animationDelay: '1s'
+          }}></div>
           </div>
         </div>
       </div>
-      <div className="container mx-auto px-4 md:px-6 flex justify-center mt-16">
-        <a href="#about" className="flex items-center gap-2 text-gray-600 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors hover:scale-110 transform duration-300">
-          <span>Scroll Down</span>
-          <ArrowDownIcon size={20} className="animate-bounce" />
+      <div className={`container mx-auto px-4 md:px-6 flex justify-center mt-16 md:mt-24 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+      transitionDelay: '2s',
+      willChange: 'transform, opacity'
+    }}>
+        <a href="#about" className="flex items-center gap-2 text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-500 transform hover:translate-y-2 group" style={{
+        willChange: 'transform'
+      }}>
+          <span className="font-serif">Discover More</span>
+          <ArrowDownIcon size={20} className="animate-bounce group-hover:animate-none" />
         </a>
       </div>
+      <style jsx>{`
+        @keyframes gradientFlow {
+          0% {
+            background-position: 0% 50%;
+          }
+          50% {
+            background-position: 100% 50%;
+          }
+          100% {
+            background-position: 0% 50%;
+          }
+        }
+      `}</style>
     </section>;
 };
-export default Hero;
+export default memo(Hero);

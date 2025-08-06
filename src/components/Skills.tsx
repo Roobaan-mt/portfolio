@@ -1,5 +1,11 @@
-import React from 'react';
+import React, { useCallback, useEffect, useState, useRef, memo } from 'react';
 const Skills = () => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const skillBarsRef = useRef<HTMLDivElement>(null);
+  const additionalSkillsRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
   const skills = [{
     name: 'Swift',
     progress: 90
@@ -32,59 +38,117 @@ const Skills = () => {
     progress: 85
   }];
   const additionalSkills = ['Core Data', 'MapKit', 'AVFoundation', 'Photos Framework', 'UI/UX Design', 'Cocoapods', 'Selenium', 'ZifMp SDK'];
-  return <section id="skills" className="py-16 md:py-24 bg-gray-50 dark:bg-gray-900 w-full transition-colors duration-500">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 animate-slide-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+  // Optimized intersection observer setup
+  const setupIntersectionObserver = useCallback(() => {
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      const entry = entries[0];
+      if (entry.isIntersecting && !isVisible) {
+        setIsVisible(true);
+        // Delay animation start slightly for better perceived performance
+        setTimeout(() => setAnimationStarted(true), 100);
+      }
+    };
+    const observer = new IntersectionObserver(handleIntersect, options);
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    return () => observer.disconnect();
+  }, [isVisible]);
+  useEffect(() => {
+    return setupIntersectionObserver();
+  }, [setupIntersectionObserver]);
+  // Calculate staggered animation delays
+  const getSkillBarDelay = (index: number) => {
+    return `${0.2 + index * 0.05}s`;
+  };
+  const getAdditionalSkillDelay = (index: number) => {
+    return `${0.6 + index * 0.05}s`;
+  };
+  const getStatDelay = (index: number) => {
+    return `${1.0 + index * 0.1}s`;
+  };
+  return <section id="skills" ref={sectionRef} className="py-20 md:py-32 bg-gray-50 dark:bg-royal-black/95 w-full transition-colors duration-500 relative overflow-hidden">
+      {/* Animated background decorations */}
+      <div className={`absolute top-0 left-0 w-full h-full bg-gradient-to-br from-royal-purple/5 to-royal-gold/5 dark:from-royal-purple/10 dark:to-royal-gold/10 transition-opacity duration-1500 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{
+      backgroundSize: '200% 200%',
+      animation: animationStarted ? 'gradientShift 15s ease infinite' : 'none',
+      willChange: 'background-position'
+    }}></div>
+      <div className={`absolute top-20 right-20 w-40 h-40 rounded-full bg-royal-gold/10 dark:bg-royal-gold/5 blur-3xl transition-all duration-1500 ease-out ${animationStarted ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      transformOrigin: 'center',
+      transitionDelay: '0.3s',
+      willChange: 'transform, opacity'
+    }}></div>
+      <div className={`absolute bottom-20 left-20 w-60 h-60 rounded-full bg-royal-purple/10 dark:bg-royal-purple/5 blur-3xl transition-all duration-1500 ease-out ${animationStarted ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      transformOrigin: 'center',
+      transitionDelay: '0.6s',
+      willChange: 'transform, opacity'
+    }}></div>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className={`text-center mb-16 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        willChange: 'transform, opacity'
+      }}>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
             My Skills
           </h2>
-          <div className="w-20 h-1 bg-indigo-600 dark:bg-indigo-500 mx-auto mb-6"></div>
-          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+          <div className="w-24 h-1 bg-gradient-to-r from-royal-purple to-royal-gold mx-auto mb-6"></div>
+          <p className="text-lg text-gray-800 dark:text-gray-200 max-w-2xl mx-auto font-sans">
             I've honed my skills in mobile development with a focus on Flutter
             and iOS platforms. Here's a breakdown of my technical expertise:
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 max-w-4xl mx-auto">
-          {skills.map((skill, index) => <div key={skill.name} className="mb-4 skill-bar animate-slide-up" style={{
-          animationDelay: `${index * 0.1}s`
+        <div ref={skillBarsRef} className="grid grid-cols-1 md:grid-cols-2 gap-x-10 gap-y-6 max-w-4xl mx-auto">
+          {skills.map((skill, index) => <div key={skill.name} className={`mb-4 skill-bar transition-all duration-700 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          transitionDelay: getSkillBarDelay(index),
+          willChange: 'transform, opacity'
         }}>
-              <div className="flex justify-between mb-1">
-                <span className="font-medium text-gray-700 dark:text-gray-300">
+              <div className="flex justify-between mb-2">
+                <span className="font-serif font-medium text-gray-800 dark:text-royal-white">
                   {skill.name}
                 </span>
-                <span className="text-indigo-600 dark:text-indigo-400 font-medium">
+                <span className="text-royal-purple dark:text-royal-gold font-medium">
                   {skill.progress}%
                 </span>
               </div>
-              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full">
-                <div className="h-2 bg-indigo-600 dark:bg-indigo-500 rounded-full progress-fill" style={{
-              width: `${skill.progress}%`
+              <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div className="h-2 bg-gradient-to-r from-royal-purple to-royal-gold rounded-full transition-all duration-1000 ease-out" style={{
+              width: animationStarted ? `${skill.progress}%` : '0%',
+              transitionDelay: `${getSkillBarDelay(index)}`,
+              willChange: 'width'
             }}></div>
               </div>
             </div>)}
         </div>
-        <div className="mt-12 max-w-4xl mx-auto animate-fade-in" style={{
-        animationDelay: '0.5s'
+        <div ref={additionalSkillsRef} className={`mt-16 max-w-4xl mx-auto transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        transitionDelay: '0.6s',
+        willChange: 'transform, opacity'
       }}>
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4 text-center">
+          <h3 className="text-2xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-6 text-center">
             Additional Skills
           </h3>
-          <div className="flex flex-wrap justify-center gap-3">
-            {additionalSkills.map((skill, index) => <span key={skill} className="bg-white dark:bg-gray-700 px-4 py-2 rounded-full border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors transform hover:scale-105 duration-300 animate-fade-in" style={{
-            animationDelay: `${0.5 + index * 0.1}s`
+          <div className="flex flex-wrap justify-center gap-4">
+            {additionalSkills.map((skill, index) => <span key={skill} className={`glass backdrop-blur-md px-6 py-3 rounded-full border border-royal-purple/20 dark:border-royal-gold/20 text-gray-800 dark:text-royal-white hover:border-royal-gold hover:shadow-gold transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 transition-all duration-700 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+            transitionDelay: getAdditionalSkillDelay(index),
+            willChange: 'transform, opacity, box-shadow'
           }}>
                 {skill}
               </span>)}
           </div>
         </div>
-        <div className="mt-8 max-w-4xl mx-auto animate-fade-in" style={{
-        animationDelay: '0.7s'
+        <div className={`mt-12 max-w-4xl mx-auto transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        transitionDelay: '1s',
+        willChange: 'transform, opacity'
       }}>
-          <div className="bg-white dark:bg-gray-700 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-600 hover:shadow-md transition-all duration-300 hover:scale-102">
-            <h3 className="text-lg font-semibold text-indigo-600 dark:text-indigo-400 mb-2">
+          <div className="glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 transform transition-all duration-500 hover:shadow-gold hover:-translate-y-2">
+            <h3 className="text-xl font-serif font-semibold text-royal-purple dark:text-royal-gold mb-3">
               Cross-Platform SDK Experience
             </h3>
-            <p className="text-gray-700 dark:text-gray-300">
+            <p className="text-gray-800 dark:text-gray-200 font-sans">
               I have extensive experience working with ZifMp SDK - implementing
               it as a framework for iOS, a library for Android, and a plugin for
               Flutter applications, enabling seamless functionality across
@@ -92,87 +156,40 @@ const Skills = () => {
             </p>
           </div>
         </div>
-        <div className="mt-16 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
-          <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-700 rounded-lg shadow-sm transform hover:scale-105 duration-300 animate-fade-in" style={{
-          animationDelay: '0.8s'
+        <div ref={statsRef} className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto">
+          {[{
+          value: '4+',
+          label: 'Years Experience'
+        }, {
+          value: '10+',
+          label: 'Projects Completed'
+        }, {
+          value: '3',
+          label: 'Companies Worked With'
+        }, {
+          value: '4',
+          label: 'App Store Apps'
+        }].map((stat, index) => <div key={index} className={`flex flex-col items-center p-8 glass backdrop-blur-md rounded-xl shadow-elegant border border-royal-gold/10 transform transition-all duration-700 ease-out hover:shadow-gold hover:-translate-y-2 ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          transitionDelay: getStatDelay(index),
+          willChange: 'transform, opacity, box-shadow'
         }}>
-            <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2 counter animate-bounce-slow">
-              4+
-            </div>
-            <div className="text-gray-700 dark:text-gray-300 text-center">
-              Years Experience
-            </div>
-          </div>
-          <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-700 rounded-lg shadow-sm transform hover:scale-105 duration-300 animate-fade-in" style={{
-          animationDelay: '0.9s'
-        }}>
-            <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2 counter animate-bounce-slow" style={{
-            animationDelay: '0.2s'
+              <div className="relative text-4xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-3" style={{
+            opacity: animationStarted ? 1 : 0,
+            transform: animationStarted ? 'scale(1)' : 'scale(0.8)',
+            transition: 'opacity 0.8s ease-out, transform 0.8s ease-out',
+            transitionDelay: `${getStatDelay(index)}`,
+            willChange: 'transform, opacity'
           }}>
-              10+
-            </div>
-            <div className="text-gray-700 dark:text-gray-300 text-center">
-              Projects Completed
-            </div>
-          </div>
-          <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-700 rounded-lg shadow-sm transform hover:scale-105 duration-300 animate-fade-in" style={{
-          animationDelay: '1s'
-        }}>
-            <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2 counter animate-bounce-slow" style={{
-            animationDelay: '0.4s'
-          }}>
-              3
-            </div>
-            <div className="text-gray-700 dark:text-gray-300 text-center">
-              Companies Worked With
-            </div>
-          </div>
-          <div className="flex flex-col items-center p-6 bg-white dark:bg-gray-700 rounded-lg shadow-sm transform hover:scale-105 duration-300 animate-fade-in" style={{
-          animationDelay: '1.1s'
-        }}>
-            <div className="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-2 counter animate-bounce-slow" style={{
-            animationDelay: '0.6s'
-          }}>
-              4
-            </div>
-            <div className="text-gray-700 dark:text-gray-300 text-center">
-              App Store Apps
-            </div>
-          </div>
+                <span className="counter">{stat.value}</span>
+                {/* Subtle glow effect */}
+                <div className="absolute inset-0 blur-sm bg-royal-purple/30 dark:bg-royal-gold/30 opacity-0 group-hover:opacity-100 transition-opacity duration-700 -z-10"></div>
+              </div>
+              <div className="text-gray-800 dark:text-royal-white text-center font-sans">
+                {stat.label}
+              </div>
+            </div>)}
         </div>
       </div>
-      <style jsx>{`
-        @keyframes fillProgress {
-          from {
-            width: 0;
-          }
-          to {
-            width: 100%;
-          }
-        }
-        .progress-fill {
-          animation: fillProgress 1.5s ease-out forwards;
-        }
-        .skill-bar:hover .progress-fill {
-          background-color: #4f46e5;
-        }
-        .dark .skill-bar:hover .progress-fill {
-          background-color: #818cf8;
-        }
-        @keyframes countUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .counter {
-          animation: countUp 1s ease-out forwards;
-        }
-      `}</style>
     </section>;
 };
-export default Skills;
+export default memo(Skills);

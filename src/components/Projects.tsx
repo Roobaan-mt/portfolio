@@ -1,14 +1,37 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState, useRef, lazy, memo } from 'react';
 import { GithubIcon } from 'lucide-react';
 // Store icons as SVG components
-const AppStoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-blue-600 dark:text-blue-400">
+const AppStoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-blue-600 dark:text-blue-400">
     <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 10v-4l6 4-6 4v-4z" />
   </svg>;
-const PlayStoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor" className="text-green-600 dark:text-green-400">
+const PlayStoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-green-600 dark:text-green-400">
     <path d="M3 20.562l7.371-4.49-1.871-1.871-5.5 6.361zm7.371-11.627l-7.371-4.49 5.5 6.361 1.871-1.871zm1.873.704l2.756-2.756-9.327-5.683v11.51l9.327-5.684-2.756-2.757 2.756 2.756v-11.509l-9.327 5.684 2.756 2.755-2.756-2.755-9.327 5.683v11.51l9.327-5.684-2.756-2.756zm0 5.513l2.756 2.756 9.327-5.683v-11.51l-9.327 5.684 2.756 2.755-2.756-2.755-9.327 5.683v11.51l9.327-5.684-2.756-2.756z" />
   </svg>;
+// Lazy load image component
+const LazyImage = ({
+  src,
+  alt,
+  className
+}: {
+  src: string;
+  alt: string;
+  className: string;
+}) => {
+  const [isLoaded, setIsLoaded] = useState(false);
+  const imgRef = useRef<HTMLImageElement>(null);
+  useEffect(() => {
+    if (imgRef.current && imgRef.current.complete) {
+      setIsLoaded(true);
+    }
+  }, []);
+  return <img ref={imgRef} src={src} alt={alt} className={`${className} ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`} loading="lazy" onLoad={() => setIsLoaded(true)} />;
+};
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isVisible, setIsVisible] = useState(false);
+  const [visibleProjects, setVisibleProjects] = useState(6); // For progressive loading
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const projectsRef = useRef<HTMLDivElement>(null);
   const projects = [{
     id: 1,
     title: 'NextPeak',
@@ -65,146 +88,150 @@ const Projects = () => {
     tags: ['Swift', 'UIKit', 'CoreData', 'No Storyboard'],
     githubUrl: 'https://github.com/Roobaan/Store'
   }];
-  const filteredProjects = activeFilter === 'all' ? projects : projects.filter(project => project.category === activeFilter);
-  return <section id="projects" className="py-16 md:py-24 bg-white dark:bg-gray-800 w-full transition-colors duration-500">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 animate-slide-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+  const filteredProjects = useCallback(() => {
+    return activeFilter === 'all' ? projects.slice(0, visibleProjects) : projects.filter(project => project.category === activeFilter).slice(0, visibleProjects);
+  }, [activeFilter, visibleProjects]);
+  // Optimized intersection observer
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      if (entries[0].isIntersecting && !isVisible) {
+        setIsVisible(true);
+      }
+    };
+    const observer = new IntersectionObserver(handleIntersect, options);
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    return () => observer.disconnect();
+  }, [isVisible]);
+  // Load more projects when user scrolls to bottom of projects section
+  useEffect(() => {
+    const handleScroll = () => {
+      if (projectsRef.current) {
+        const rect = projectsRef.current.getBoundingClientRect();
+        const isBottom = rect.bottom <= window.innerHeight + 300;
+        if (isBottom && visibleProjects < projects.length) {
+          // Add debounce to avoid too many state updates
+          setTimeout(() => {
+            setVisibleProjects(prev => Math.min(prev + 3, projects.length));
+          }, 300);
+        }
+      }
+    };
+    window.addEventListener('scroll', handleScroll, {
+      passive: true
+    });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, [visibleProjects, projects.length]);
+  return <section id="projects" ref={sectionRef} className="py-20 md:py-32 bg-white dark:bg-royal-black w-full transition-colors duration-500 relative overflow-hidden">
+      {/* Background decorations */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl"></div>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div className={`text-center mb-16 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        willChange: 'transform, opacity'
+      }}>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
             My Projects
           </h2>
-          <div className="w-20 h-1 bg-indigo-600 dark:bg-indigo-500 mx-auto mb-6"></div>
-          <p className="text-lg text-gray-700 dark:text-gray-300 max-w-2xl mx-auto">
+          <div className="w-24 h-1 bg-gradient-to-r from-royal-purple to-royal-gold mx-auto mb-6"></div>
+          <p className="text-lg text-gray-800 dark:text-gray-200 max-w-2xl mx-auto font-sans">
             Here are some of my featured mobile applications built with Flutter
             and iOS. I've worked on 10+ projects throughout my career.
           </p>
         </div>
-        <div className="mb-12 max-w-4xl mx-auto bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm border-l-4 border-indigo-500 dark:border-indigo-400 animate-fade-in hover:shadow-md transition-all duration-300 transform hover:scale-101">
-          <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
+        <div className={`mb-16 max-w-5xl mx-auto glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        transitionDelay: '0.3s',
+        willChange: 'transform, opacity'
+      }}>
+          <h3 className="text-2xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-6">
             ZifMP SDK Implementation Expertise
           </h3>
-          <p className="text-gray-700 dark:text-gray-300 mb-6">
+          <p className="text-gray-800 dark:text-gray-200 mb-8 font-sans">
             ZifMP is a comprehensive mobile application monitoring tool that
             tracks critical metrics including total user count, active users,
             installed users, session counts, and app performance. It provides
             real-time monitoring of crashes with symbolication, ANR (Application
-            Not Responding) incidents, and overall application health, enabling
-            teams to proactively address issues before they impact the user
-            experience.
+            Not Responding) incidents, and overall application health.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-102">
-              <h4 className="font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-                iOS Framework Integration
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Developed a native iOS framework implementation that tracks user
-                sessions, monitors crashes with detailed symbolication, and
-                collects usage metrics. The framework efficiently captures user
-                interactions, network requests, and device performance data
-                while maintaining minimal overhead and battery impact. The
-                implementation provides real-time visibility into iOS app
-                performance and user engagement metrics.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-102">
-              <h4 className="font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-                Android Library Development
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Created a lightweight Android library for ZifMP that monitors
-                active users, session counts, ANR incidents, and crash reports
-                with symbolication. The implementation provides detailed
-                insights into application performance, user engagement patterns,
-                and stability metrics. The library efficiently collects and
-                transmits data with minimal impact on the host application's
-                performance and battery consumption.
-              </p>
-            </div>
-            <div className="bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 transform hover:scale-102">
-              <h4 className="font-semibold text-indigo-600 dark:text-indigo-400 mb-3">
-                Flutter Plugin Architecture
-              </h4>
-              <p className="text-gray-700 dark:text-gray-300 text-sm">
-                Engineered a cross-platform Flutter plugin that integrates with
-                ZifMP to monitor total users, active sessions, crashes, and ANR
-                events across both iOS and Android from a single codebase. The
-                plugin provides a unified API that automatically handles
-                platform-specific monitoring requirements while delivering
-                consistent metrics and reporting capabilities, giving developers
-                comprehensive visibility into their Flutter application's
-                performance.
-              </p>
-            </div>
-          </div>
-          <div className="mt-6 bg-indigo-50 dark:bg-indigo-900/20 p-4 rounded-lg border border-indigo-100 dark:border-indigo-800">
-            <h4 className="font-semibold text-indigo-700 dark:text-indigo-300 mb-2">
-              Key Achievements
-            </h4>
-            <ul className="list-disc pl-5 text-gray-700 dark:text-gray-300 space-y-1">
-              <li>
-                Implemented comprehensive monitoring of user metrics (active
-                users, total users, installed users) across all platforms
-              </li>
-              <li>
-                Developed efficient crash reporting with symbolication to
-                quickly identify and resolve critical issues
-              </li>
-              <li>
-                Created unified dashboards displaying session metrics, ANR
-                incidents, and performance data for stakeholder visibility
-              </li>
-              <li>
-                Engineered data collection systems with minimal performance
-                overhead and battery impact
-              </li>
-            </ul>
+            {[{
+            title: 'iOS Framework Integration',
+            description: 'Developed a native iOS framework implementation that tracks user sessions, monitors crashes with detailed symbolication, and collects usage metrics.'
+          }, {
+            title: 'Android Library Development',
+            description: 'Created a lightweight Android library for ZifMP that monitors active users, session counts, ANR incidents, and crash reports with symbolication.'
+          }, {
+            title: 'Flutter Plugin Architecture',
+            description: 'Engineered a cross-platform Flutter plugin that integrates with ZifMP to monitor total users, active sessions, crashes, and ANR events across both iOS and Android.'
+          }].map((item, index) => <div key={index} className={`glass backdrop-blur-md p-6 rounded-lg shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-500 transform hover:-translate-y-2 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+            transitionDelay: `${0.4 + index * 0.1}s`,
+            willChange: 'transform, opacity, box-shadow'
+          }}>
+                <h4 className="font-serif font-semibold text-royal-purple dark:text-royal-gold mb-3">
+                  {item.title}
+                </h4>
+                <p className="text-gray-700 dark:text-gray-300 text-sm font-sans">
+                  {item.description}
+                </p>
+              </div>)}
           </div>
         </div>
-        <div className="flex justify-center mb-10 animate-slide-up" style={{
-        animationDelay: '0.3s'
+        <div className={`flex justify-center mb-12 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        transitionDelay: '0.8s',
+        willChange: 'transform, opacity'
       }}>
-          <div className="flex flex-wrap gap-3 justify-center">
-            <button className={`px-5 py-2 rounded-full transform hover:scale-105 transition-all duration-300 ${activeFilter === 'all' ? 'bg-indigo-600 dark:bg-indigo-700 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`} onClick={() => setActiveFilter('all')}>
-              All
-            </button>
-            <button className={`px-5 py-2 rounded-full transform hover:scale-105 transition-all duration-300 ${activeFilter === 'flutter' ? 'bg-indigo-600 dark:bg-indigo-700 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`} onClick={() => setActiveFilter('flutter')}>
-              Flutter
-            </button>
-            <button className={`px-5 py-2 rounded-full transform hover:scale-105 transition-all duration-300 ${activeFilter === 'ios' ? 'bg-indigo-600 dark:bg-indigo-700 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}`} onClick={() => setActiveFilter('ios')}>
-              iOS
-            </button>
+          <div className="flex flex-wrap gap-4 justify-center">
+            {['all', 'flutter', 'ios'].map(filter => <button key={filter} className={`px-8 py-3 rounded-full font-serif font-medium transform transition-all duration-500 hover:scale-105 ${activeFilter === filter ? 'bg-gradient-to-r from-royal-purple to-royal-gold text-white shadow-royal' : 'glass backdrop-blur-md text-gray-800 dark:text-gray-200 hover:shadow-royal'}`} onClick={() => {
+            setActiveFilter(filter);
+            setVisibleProjects(6); // Reset visible projects when filter changes
+          }} style={{
+            willChange: 'transform, box-shadow'
+          }}>
+                {filter.charAt(0).toUpperCase() + filter.slice(1)}
+              </button>)}
           </div>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects.map((project, index) => <div key={project.id} className="bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 transform hover:-translate-y-2 animate-fade-in" style={{
-          animationDelay: `${0.1 * index}s`
+        <div ref={projectsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {filteredProjects().map((project, index) => <div key={project.id} className={`glass backdrop-blur-md rounded-xl overflow-hidden shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-700 ease-out transform hover:-translate-y-3 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          transitionDelay: `${0.9 + Math.min(index, 5) * 0.1}s`,
+          willChange: 'transform, opacity, box-shadow'
         }}>
-              <div className="h-48 overflow-hidden">
-                <img src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform hover:scale-110 duration-700" />
+              <div className="h-56 overflow-hidden relative">
+                <LazyImage src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-royal-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 flex items-end p-4">
+                  <div className="flex gap-3">
+                    {project.liveUrl && <a href={project.liveUrl} className="flex items-center gap-1 bg-royal-gold/90 text-royal-black px-4 py-2 rounded-full hover:bg-royal-gold transition-colors duration-300" target="_blank" rel="noopener noreferrer">
+                        <AppStoreIcon />
+                        <span>App Store</span>
+                      </a>}
+                    {project.playStoreUrl && <a href={project.playStoreUrl} className="flex items-center gap-1 bg-royal-blue/90 text-white px-4 py-2 rounded-full hover:bg-royal-blue transition-colors duration-300" target="_blank" rel="noopener noreferrer">
+                        <PlayStoreIcon />
+                        <span>Play Store</span>
+                      </a>}
+                  </div>
+                </div>
               </div>
               <div className="p-6">
-                <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-white">
+                <h3 className="text-xl font-serif font-bold mb-3 text-royal-purple dark:text-royal-gold">
                   {project.title}
                 </h3>
-                <p className="text-gray-700 dark:text-gray-300 mb-4">
+                <p className="text-gray-800 dark:text-gray-200 mb-4 font-sans">
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map(tag => <span key={tag} className="bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 text-sm rounded-full hover:bg-indigo-200 dark:hover:bg-indigo-800/40 transition-colors">
+                  {project.tags.map(tag => <span key={tag} className="bg-royal-purple/10 dark:bg-royal-purple/20 text-royal-purple dark:text-royal-gold-light px-3 py-1 text-sm rounded-full hover:bg-royal-purple/20 dark:hover:bg-royal-purple/30 transition-colors duration-300">
                       {tag}
                     </span>)}
                 </div>
-                <div className="flex flex-wrap gap-3">
-                  {project.liveUrl && <a href={project.liveUrl} className="flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 transition-colors" target="_blank" rel="noopener noreferrer">
-                      <AppStoreIcon />
-                      <span>App Store</span>
-                    </a>}
-                  {project.playStoreUrl && <a href={project.playStoreUrl} className="flex items-center gap-1 text-green-600 dark:text-green-400 hover:text-green-800 dark:hover:text-green-300 transition-colors" target="_blank" rel="noopener noreferrer">
-                      <PlayStoreIcon />
-                      <span>Play Store</span>
-                    </a>}
-                  {project.githubUrl && <a href={project.githubUrl} className="flex items-center gap-1 text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white transition-colors" target="_blank" rel="noopener noreferrer">
-                      <GithubIcon size={16} />
+                <div className="flex flex-wrap gap-3 mt-6">
+                  {project.githubUrl && <a href={project.githubUrl} className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:text-royal-purple dark:hover:text-royal-gold transition-colors duration-300" target="_blank" rel="noopener noreferrer">
+                      <GithubIcon size={18} />
                       <span>Source Code</span>
                     </a>}
                 </div>
@@ -214,4 +241,4 @@ const Projects = () => {
       </div>
     </section>;
 };
-export default Projects;
+export default memo(Projects);

@@ -1,100 +1,137 @@
-import React from 'react';
+import React, { useEffect, useState, useRef, memo } from 'react';
 import { CodeIcon, SmartphoneIcon, GlobeIcon, BriefcaseIcon } from 'lucide-react';
 const About = () => {
-  return <section id="about" className="py-16 md:py-24 bg-white dark:bg-gray-800 w-full transition-colors duration-500">
-      <div className="container mx-auto px-4 md:px-6">
-        <div className="text-center mb-12 animate-slide-up">
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const featuresRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+  const [animationStarted, setAnimationStarted] = useState(false);
+  // Optimized scroll animation with IntersectionObserver
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.1
+    };
+    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          // Only set visible once to avoid unnecessary re-renders
+          if (!isVisible && entry.target === sectionRef.current) {
+            setIsVisible(true);
+            // Start staggered animations after a short delay
+            setTimeout(() => setAnimationStarted(true), 100);
+          }
+          // Add animation class
+          entry.target.classList.add('animate-in');
+          // Stop observing this element
+          observer.unobserve(entry.target);
+        }
+      });
+    };
+    const observer = new IntersectionObserver(handleIntersect, options);
+    if (sectionRef.current) {
+      observer.observe(sectionRef.current);
+    }
+    // Observe feature cards with staggered animation
+    const featureElements = featuresRef.current?.querySelectorAll('.feature-card');
+    featureElements?.forEach((el, i) => {
+      el.classList.add('opacity-0', 'translate-y-10');
+      // Stagger animation delay
+      el.style.transitionDelay = `${i * 0.15}s`;
+      observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, [isVisible]);
+  return <section id="about" className="py-20 md:py-32 bg-white dark:bg-royal-black w-full transition-colors duration-500 relative overflow-hidden">
+      {/* Background decorations with cinematic animations */}
+      <div className={`absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      transformOrigin: 'center',
+      willChange: 'transform, opacity'
+    }}></div>
+      <div className={`absolute bottom-0 left-0 w-96 h-96 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      transformOrigin: 'center',
+      transitionDelay: '0.3s',
+      willChange: 'transform, opacity'
+    }}></div>
+      <div className="container mx-auto px-4 md:px-6 relative z-10">
+        <div ref={sectionRef} className="text-center mb-16 opacity-0 translate-y-10 transition-all duration-1000 ease-out" style={{
+        willChange: 'transform, opacity'
+      }}>
+          <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
             About Me
           </h2>
-          <div className="w-20 h-1 bg-indigo-600 dark:bg-indigo-500 mx-auto"></div>
+          <div className="w-24 h-1 bg-gradient-to-r from-royal-purple to-royal-gold mx-auto mb-6"></div>
         </div>
-        <div className="flex flex-col md:flex-row gap-10 items-center">
-          <div className="md:w-1/2 animate-slide-up">
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-              As an experienced iOS Developer and Flutter Developer with 4+
-              years of professional experience and a proven track record of
-              developing successful mobile applications, I am seeking a
-              challenging role to utilize my skills and expertise in creating
-              innovative iOS applications or cross platform applications using
-              Flutter.
-            </p>
-            <p className="text-lg text-gray-700 dark:text-gray-300 mb-6">
-              My journey in mobile development began with iOS, mastering Swift,
-              UIKit and SwiftUI, and expanded to cross-platform development with
-              Flutter. I have specialized experience implementing ZifMp SDK
-              across iOS (as a framework), Android (as a library), and Flutter
-              (as a plugin), demonstrating my versatility in cross-platform
-              development.
-            </p>
-            <p className="text-lg text-gray-700 dark:text-gray-300">
-              Based in Chennai, I've worked with multiple companies to build and
-              maintain high-quality mobile applications, integrate APIs, and
-              optimize app performance. I'm passionate about creating intuitive
-              user interfaces and ensuring smooth functionality across different
-              platforms.
-            </p>
+        <div className="flex flex-col md:flex-row gap-16 items-center">
+          <div ref={contentRef} className={`md:w-1/2 opacity-0 translate-y-10 transition-all duration-1000 ease-out ${animationStarted ? 'animate-in' : ''}`} style={{
+          transitionDelay: '0.3s',
+          willChange: 'transform, opacity'
+        }}>
+            <div className="space-y-6">
+              {['As an experienced iOS Developer and Flutter Developer with 4+ years of professional experience and a proven track record of developing successful mobile applications, I am seeking a challenging role to utilize my skills and expertise in creating innovative iOS applications or cross platform applications using Flutter.', 'My journey in mobile development began with iOS, mastering Swift, UIKit and SwiftUI, and expanded to cross-platform development with Flutter. I have specialized experience implementing ZifMp SDK across iOS (as a framework), Android (as a library), and Flutter (as a plugin), demonstrating my versatility in cross-platform development.', "Based in Chennai, I've worked with multiple companies to build and maintain high-quality mobile applications, integrate APIs, and optimize app performance. I'm passionate about creating intuitive user interfaces and ensuring smooth functionality across different platforms."].map((paragraph, index) => <p key={index} className={`text-lg text-gray-800 dark:text-gray-200 font-sans leading-relaxed transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+              transitionDelay: `${0.5 + index * 0.2}s`,
+              willChange: 'transform, opacity'
+            }}>
+                  {paragraph}
+                </p>)}
+            </div>
           </div>
-          <div className="md:w-1/2">
+          <div ref={featuresRef} className="md:w-1/2">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow transform hover:scale-105 duration-300 animate-fade-in">
-                <div className="bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
-                  <SmartphoneIcon size={24} className="text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                  Mobile Development
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Creating intuitive, responsive, and feature-rich mobile
-                  applications for iOS and Android platforms.
-                </p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow transform hover:scale-105 duration-300 animate-fade-in" style={{
-              animationDelay: '0.2s'
+              {[{
+              icon: <SmartphoneIcon size={28} className="text-white" />,
+              title: 'Mobile Development',
+              description: 'Creating intuitive, responsive, and feature-rich mobile applications for iOS and Android platforms.',
+              bgClass: 'bg-gradient-to-br from-royal-purple to-royal-purple-light dark:from-royal-purple-dark dark:to-royal-purple'
+            }, {
+              icon: <CodeIcon size={28} className="text-white" />,
+              title: 'Flutter Expertise',
+              description: "Building cross-platform applications with Flutter's reactive framework and Dart programming.",
+              bgClass: 'bg-gradient-to-br from-royal-blue to-royal-blue-light dark:from-royal-blue-dark dark:to-royal-blue'
+            }, {
+              icon: <GlobeIcon size={28} className="text-royal-black" />,
+              title: 'iOS Development',
+              description: 'Crafting native iOS applications with Swift, UIKit, and SwiftUI for exceptional user experiences.',
+              bgClass: 'bg-gradient-to-br from-royal-gold to-royal-gold-light dark:from-royal-gold-dark dark:to-royal-gold'
+            }, {
+              icon: <BriefcaseIcon size={28} className="text-white" />,
+              title: 'Professional Experience',
+              description: 'Worked with GAVS Technologies, SivaCerulean Technologies, and Innovix Software Technologies.',
+              bgClass: 'bg-gradient-to-br from-royal-purple-light to-royal-blue-light dark:from-royal-purple dark:to-royal-blue'
+            }].map((feature, index) => <div key={index} className="feature-card glass backdrop-blur-md p-8 rounded-xl shadow-elegant transform transition-all duration-700 ease-out card-3d" style={{
+              willChange: 'transform, opacity, box-shadow',
+              transformOrigin: 'center'
             }}>
-                <div className="bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
-                  <CodeIcon size={24} className="text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                  Flutter Expertise
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Building cross-platform applications with Flutter's reactive
-                  framework and Dart programming.
-                </p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow transform hover:scale-105 duration-300 animate-fade-in" style={{
-              animationDelay: '0.4s'
-            }}>
-                <div className="bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
-                  <GlobeIcon size={24} className="text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                  iOS Development
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Crafting native iOS applications with Swift, UIKit, and
-                  SwiftUI for exceptional user experiences.
-                </p>
-              </div>
-              <div className="bg-gray-50 dark:bg-gray-700 p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow transform hover:scale-105 duration-300 animate-fade-in" style={{
-              animationDelay: '0.6s'
-            }}>
-                <div className="bg-indigo-100 dark:bg-indigo-900/50 p-3 rounded-full w-14 h-14 flex items-center justify-center mb-4">
-                  <BriefcaseIcon size={24} className="text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h3 className="text-xl font-semibold mb-2 text-gray-900 dark:text-white">
-                  Professional Experience
-                </h3>
-                <p className="text-gray-600 dark:text-gray-300">
-                  Worked with GAVS Technologies, SivaCerulean Technologies, and
-                  Innovix Software Technologies.
-                </p>
-              </div>
+                  <div className={`${feature.bgClass} p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-royal transition-all duration-1000 ease-out ${animationStarted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{
+                transitionDelay: `${0.6 + index * 0.15}s`,
+                willChange: 'transform, opacity'
+              }}>
+                    {feature.icon}
+                  </div>
+                  <h3 className={`text-xl font-serif font-semibold mb-3 text-gray-900 dark:text-white transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
+                transitionDelay: `${0.7 + index * 0.15}s`,
+                willChange: 'transform, opacity'
+              }}>
+                    {feature.title}
+                  </h3>
+                  <p className={`text-gray-700 dark:text-gray-300 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
+                transitionDelay: `${0.8 + index * 0.15}s`,
+                willChange: 'transform, opacity'
+              }}>
+                    {feature.description}
+                  </p>
+                </div>)}
             </div>
           </div>
         </div>
       </div>
+      <style jsx>{`
+        .animate-in {
+          opacity: 1 !important;
+          transform: translateY(0) !important;
+        }
+      `}</style>
     </section>;
 };
-export default About;
+export default memo(About);

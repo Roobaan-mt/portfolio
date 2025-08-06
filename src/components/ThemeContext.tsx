@@ -1,4 +1,4 @@
-import React, { useEffect, useState, createContext, useContext } from 'react';
+import React, { useEffect, useMemo, useState, createContext, useContext } from 'react';
 type Theme = 'light' | 'dark';
 interface ThemeContextType {
   theme: Theme;
@@ -22,8 +22,11 @@ export const ThemeProvider: React.FC<{
   // Update class on document element when theme changes
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light', 'dark');
-    root.classList.add(theme);
+    // Apply theme change with requestAnimationFrame to ensure it happens during an animation frame
+    requestAnimationFrame(() => {
+      root.classList.remove('light', 'dark');
+      root.classList.add(theme);
+    });
     localStorage.setItem('theme', theme);
   }, [theme]);
   // Listen for system theme changes
@@ -49,10 +52,12 @@ export const ThemeProvider: React.FC<{
       return newTheme;
     });
   };
-  return <ThemeContext.Provider value={{
+  // Memoize the context value to prevent unnecessary re-renders
+  const contextValue = useMemo(() => ({
     theme,
     toggleTheme
-  }}>
+  }), [theme]);
+  return <ThemeContext.Provider value={contextValue}>
       {children}
     </ThemeContext.Provider>;
 };

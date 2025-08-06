@@ -3,22 +3,35 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 /* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
-/* Theme transitions */
+/* Google Fonts - with display:swap for better performance */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap&display=swap');
+/* Theme transitions - only transition essential properties */
 *, *::before, *::after {
-  transition-property: background-color, border-color, color, fill, stroke;
+  transition-property: background-color, border-color, color;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 150ms;
+  transition-duration: 300ms;
 }
-/* Custom animations */
+/* Optimize transitions for transform and opacity separately */
+.transform-transition {
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+.opacity-transition {
+  transition-property: opacity;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 300ms;
+}
+/* Custom animations - optimized for performance */
 @keyframes float {
   0% {
-    transform: translateY(0px);
+    transform: translateY(0px) translateX(0px);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-10px) translateX(5px);
   }
   100% {
-    transform: translateY(0px);
+    transform: translateY(0px) translateX(0px);
   }
 }
 @keyframes fadeIn {
@@ -32,19 +45,51 @@
 @keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(40px);
   }
   to {
     opacity: 1;
     transform: translateY(0);
   }
 }
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
 @keyframes pulse {
   0%, 100% {
     transform: scale(1);
+    opacity: 1;
   }
   50% {
     transform: scale(1.05);
+    opacity: 0.8;
   }
 }
 @keyframes spin {
@@ -60,24 +105,236 @@
     transform: translateY(0);
   }
   50% {
-    transform: translateY(-10px);
+    transform: translateY(-15px);
   }
 }
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+/* Apply GPU acceleration to animations */
 .animate-float {
-  animation: float 3s ease-in-out infinite;
+  animation: float 6s ease-in-out infinite;
+  will-change: transform;
 }
 .animate-fade-in {
   animation: fadeIn 1s ease-out forwards;
+  will-change: opacity;
 }
 .animate-slide-up {
-  animation: slideUp 0.6s ease-out forwards;
+  animation: slideUp 0.8s ease-out forwards;
+  will-change: transform, opacity;
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.8s ease-out forwards;
+  will-change: transform, opacity;
+}
+.animate-slide-in-left {
+  animation: slideInLeft 0.8s ease-out forwards;
+  will-change: transform, opacity;
+}
+.animate-zoom-in {
+  animation: zoomIn 0.8s ease-out forwards;
+  will-change: transform, opacity;
 }
 .animate-pulse-slow {
   animation: pulse 3s ease-in-out infinite;
+  will-change: transform, opacity;
 }
 .animate-spin-slow {
   animation: spin 10s linear infinite;
+  will-change: transform;
 }
 .animate-bounce-slow {
-  animation: bounce 2s ease-in-out infinite;
+  animation: bounce 2.5s ease-in-out infinite;
+  will-change: transform;
+}
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 2s linear infinite;
+  will-change: background-position;
+}
+.animate-gradient {
+  background-size: 200% 200%;
+  animation: gradientShift 8s ease infinite;
+  will-change: background-position;
+}
+/* Glass effect - optimized */
+.glass {
+  backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+  will-change: backdrop-filter, background-color;
+}
+.dark .glass {
+  background-color: rgba(17, 25, 40, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.125);
+}
+/* Parallax effect - GPU accelerated */
+.parallax {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  will-change: transform;
+}
+.parallax-layer {
+  transform: translateZ(0);
+  transition: transform 0.5s ease-out;
+  will-change: transform;
+}
+/* Magnetic effect */
+.magnetic-button {
+  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  will-change: transform;
+}
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.dark ::-webkit-scrollbar-track {
+  background: #1f1f1f;
+}
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #9c7c1d;
+}
+/* Animated underline - GPU accelerated */
+.animated-underline {
+  position: relative;
+}
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: #d4af37;
+  transition: width 0.3s ease;
+  will-change: width;
+}
+.animated-underline:hover::after {
+  width: 100%;
+}
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(90deg, #5a3b94, #d4af37);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+/* 3D Card effect - GPU accelerated */
+.card-3d {
+  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  will-change: transform, box-shadow;
+}
+.card-3d:hover {
+  transform: translateY(-10px) rotateX(5deg);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
+}
+/* Progress bar animations - GPU accelerated */
+@keyframes fillProgress {
+  from {
+    width: 0;
+  }
+  to {
+    width: 100%;
+  }
+}
+.progress-fill {
+  animation: fillProgress 1.5s ease-out forwards;
+  will-change: width;
+}
+.skill-bar:hover .progress-fill {
+  background-image: linear-gradient(90deg, #5a3b94, #d4af37);
+}
+/* Cinematic transitions */
+.cinematic-fade-in {
+  opacity: 0;
+  transform: scale(0.98);
+  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+  will-change: transform, opacity;
+}
+.cinematic-fade-in.visible {
+  opacity: 1;
+  transform: scale(1);
+}
+.cinematic-slide-up {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 1s ease-out, transform 1s ease-out;
+  will-change: transform, opacity;
+}
+.cinematic-slide-up.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+/* Optimize for mobile */
+@media (max-width: 768px) {
+  .animate-float {
+    animation-duration: 4s; /* Simpler animation on mobile */
+  }
+  .card-3d:hover {
+    transform: translateY(-5px); /* Reduced transform on mobile */
+  }
+  /* Reduce animation complexity on mobile */
+  .cinematic-fade-in,
+  .cinematic-slide-up {
+    transition-duration: 0.8s;
+  }
+}
+/* Add loading lazy class for images */
+.lazy-image {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.lazy-image.loaded {
+  opacity: 1;
+}
+/* Reduce motion for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+  .animate-float,
+  .animate-pulse-slow,
+  .animate-spin-slow,
+  .animate-bounce-slow,
+  .animate-shimmer,
+  .animate-gradient {
+    animation: none !important;
+  }
+  .card-3d:hover {
+    transform: none !important;
+  }
 }
