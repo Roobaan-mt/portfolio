@@ -18,7 +18,7 @@ const Hero = () => {
   const ticking = useRef(false);
   const lastScrollY = useRef(0);
   // Sample resume URL - this is a placeholder for a real resume
-  const resumeUrl = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
+  const resumeUrl = 'https://drive.google.com/file/d/1N-NjaNdSMKVqHzwfOsTj66BWY_-NLMhY/view?usp=sharing';
   // Detect when hero section enters viewport
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
