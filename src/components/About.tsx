@@ -8,6 +8,8 @@ const About = () => {
   const imageRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
+  // Sample resume URL - this is a placeholder for a real resume
+  const resumeUrl = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
   // Optimized scroll animation with IntersectionObserver
   useEffect(() => {
     const options = {
@@ -82,11 +84,11 @@ const About = () => {
             transitionDelay: '1.1s',
             willChange: 'transform, opacity'
           }}>
-              <a href="/resume.pdf" download="Roobaan_MT_Resume.pdf" className="resume-button inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-full hover:shadow-royal transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105" style={{
+              <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="resume-button inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-full hover:shadow-royal transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105" style={{
               willChange: 'transform, box-shadow'
             }}>
                 <DownloadIcon size={18} />
-                <span>Download Full Resume</span>
+                <span>View Full Resume</span>
               </a>
             </div>
           </div>

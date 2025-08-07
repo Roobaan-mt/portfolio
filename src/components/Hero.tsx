@@ -17,6 +17,8 @@ const Hero = () => {
   const [animationStarted, setAnimationStarted] = useState(false);
   const ticking = useRef(false);
   const lastScrollY = useRef(0);
+  // Sample resume URL - this is a placeholder for a real resume
+  const resumeUrl = 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf';
   // Detect when hero section enters viewport
   useEffect(() => {
     const observer = new IntersectionObserver(entries => {
@@ -146,11 +148,11 @@ const Hero = () => {
               <span className="relative z-10">Get In Touch</span>
               <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-purple-light to-royal-purple dark:from-royal-gold-light dark:to-royal-gold opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
             </a>
-            <a href="/resume.pdf" download="Roobaan_MT_Resume.pdf" className="resume-button px-8 py-4 border-2 border-royal-gold bg-royal-gold/10 dark:bg-royal-gold/20 text-royal-purple dark:text-royal-gold font-medium rounded-full hover:bg-royal-gold/20 dark:hover:bg-royal-gold/30 transition-all duration-200 transform hover:translate-y-[-5px] flex items-center gap-2" style={{
+            <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="resume-button px-8 py-4 border-2 border-royal-gold bg-royal-gold/10 dark:bg-royal-gold/20 text-royal-purple dark:text-royal-gold font-medium rounded-full hover:bg-royal-gold/20 dark:hover:bg-royal-gold/30 transition-all duration-200 transform hover:translate-y-[-5px] flex items-center gap-2" style={{
             willChange: 'transform'
           }}>
               <DownloadIcon size={18} />
-              <span>Download Resume</span>
+              <span>View Resume</span>
             </a>
           </div>
           <div className={`flex gap-6 mt-10 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
