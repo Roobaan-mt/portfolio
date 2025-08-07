@@ -167,12 +167,12 @@ const Contact = () => {
                 </label>
                 <textarea id="message" name="message" rows={5} value={formState.message} onChange={handleChange} className="w-full px-4 py-3 border-2 border-royal-purple/20 dark:border-royal-gold/20 rounded-lg focus:ring-2 focus:ring-royal-gold focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white transition-all duration-300 resize-none" placeholder="Hello, I'm interested in working with you on..." required></textarea>
               </div>
-              <button type="submit" className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-lg transition-all duration-500 transform hover:scale-105 hover:shadow-gold relative overflow-hidden group">
+              <button type="submit" className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-gold relative overflow-hidden group">
                 <span className="relative z-10 flex items-center gap-2">
                   <SendIcon size={18} />
                   <span>Send Message</span>
                 </span>
-                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-gold to-royal-purple opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-gold to-royal-purple opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
               </button>
             </form>
           </div>

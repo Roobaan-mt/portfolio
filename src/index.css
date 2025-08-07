@@ -5,22 +5,38 @@
 /* DO NOT DELETE THESE TAILWIND IMPORTS, OTHERWISE THE STYLING WILL NOT RENDER AT ALL */
 /* Google Fonts - with display:swap for better performance */
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@300;400;500;600;700&display=swap&display=swap');
-/* Theme transitions - only transition essential properties */
+/* Enable smooth scrolling at the root level for better performance */
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+/* Improve scroll performance */
+body {
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+/* Fast, consistent transitions for all elements */
 *, *::before, *::after {
   transition-property: background-color, border-color, color;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition-duration: 200ms;
 }
-/* Optimize transitions for transform and opacity separately */
+/* Optimized transform transitions - fast and responsive */
 .transform-transition {
   transition-property: transform;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition-duration: 200ms;
+  will-change: transform;
 }
+/* Optimized opacity transitions - fast and responsive */
 .opacity-transition {
   transition-property: opacity;
-  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.25, 0.1, 0.25, 1);
+  transition-duration: 200ms;
+  will-change: opacity;
 }
 /* Custom animations - optimized for performance */
 @keyframes float {
@@ -199,12 +215,12 @@
 }
 .parallax-layer {
   transform: translateZ(0);
-  transition: transform 0.5s ease-out;
+  transition: transform 0.3s ease-out;
   will-change: transform;
 }
 /* Magnetic effect */
 .magnetic-button {
-  transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  transition: transform 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
   will-change: transform;
 }
 /* Custom scrollbar */
@@ -236,7 +252,7 @@
   width: 0;
   height: 2px;
   background-color: #d4af37;
-  transition: width 0.3s ease;
+  transition: width 0.2s ease;
   will-change: width;
 }
 .animated-underline:hover::after {
@@ -252,11 +268,11 @@
 }
 /* 3D Card effect - GPU accelerated */
 .card-3d {
-  transition: transform 0.5s ease, box-shadow 0.5s ease;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
   will-change: transform, box-shadow;
 }
 .card-3d:hover {
-  transform: translateY(-10px) rotateX(5deg);
+  transform: translateY(-10px);
   box-shadow: 0 20px 30px rgba(0, 0, 0, 0.2);
 }
 /* Progress bar animations - GPU accelerated */
@@ -279,7 +295,7 @@
 .cinematic-fade-in {
   opacity: 0;
   transform: scale(0.98);
-  transition: opacity 1.2s ease-out, transform 1.2s ease-out;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   will-change: transform, opacity;
 }
 .cinematic-fade-in.visible {
@@ -289,12 +305,71 @@
 .cinematic-slide-up {
   opacity: 0;
   transform: translateY(30px);
-  transition: opacity 1s ease-out, transform 1s ease-out;
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
   will-change: transform, opacity;
 }
 .cinematic-slide-up.visible {
   opacity: 1;
   transform: translateY(0);
+}
+/* Testimonial slider - FIXED to prevent fading and shrinking of slides */
+.testimonial-slider {
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+}
+.testimonial-track {
+  display: flex;
+  transition: transform 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+  will-change: transform;
+}
+.testimonial-slide {
+  flex: 0 0 100%;
+  opacity: 1; /* Keep all slides fully visible */
+  transform: scale(1); /* Keep all slides at full size */
+  transition: transform 0.5s ease;
+  will-change: transform;
+}
+/* Resume button effects */
+.resume-button {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  will-change: transform, box-shadow;
+}
+.resume-button::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+.resume-button:hover::after {
+  left: 100%;
+}
+/* Fast skill tag transitions */
+.skill-tag {
+  transition: all 0.2s ease;
+  will-change: transform, background-color;
+}
+.skill-tag:hover {
+  transform: translateY(-2px);
+}
+/* Fast store button transitions */
+.store-button {
+  transition: all 0.2s ease;
+  will-change: transform, background-color;
+}
+.store-button:hover {
+  transform: translateY(-2px);
 }
 /* Optimize for mobile */
 @media (max-width: 768px) {
@@ -313,13 +388,16 @@
 /* Add loading lazy class for images */
 .lazy-image {
   opacity: 0;
-  transition: opacity 0.5s ease;
+  transition: opacity 0.3s ease;
 }
 .lazy-image.loaded {
   opacity: 1;
 }
 /* Reduce motion for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;

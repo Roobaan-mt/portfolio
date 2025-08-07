@@ -1,5 +1,6 @@
-import React, { useCallback, useEffect, useState, useRef, lazy, memo } from 'react';
-import { ArrowDownIcon, GithubIcon, LinkedinIcon } from 'lucide-react';
+import React, { useEffect, useState, useRef, memo } from 'react';
+import { ArrowDownIcon, GithubIcon, LinkedinIcon, DownloadIcon } from 'lucide-react';
+import profileImg from '../assets/profile.jpg';
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,34 +58,35 @@ const Hero = () => {
     }, typingDelay);
     return () => clearTimeout(timer);
   }, [displayText, currentIndex, isDeleting, phrases, typingSpeed, deletingSpeed, delayBetweenPhrases]);
-  // Optimized parallax effect with requestAnimationFrame
-  const handleScroll = useCallback(() => {
-    if (!ticking.current) {
-      // Use requestAnimationFrame to limit updates
-      requestAnimationFrame(() => {
-        if (profileRef.current && contentRef.current) {
-          const scrollValue = window.scrollY;
-          // Only update if scroll position changed significantly
-          if (Math.abs(scrollValue - lastScrollY.current) > 5) {
-            // Use transform for GPU acceleration
-            profileRef.current.style.transform = `translateY(${scrollValue * 0.08}px) rotateZ(${scrollValue * 0.008}deg)`;
-            contentRef.current.style.transform = `translateY(${scrollValue * 0.04}px)`;
-            lastScrollY.current = scrollValue;
-          }
-        }
-        ticking.current = false;
-      });
-      ticking.current = true;
-    }
-  }, []);
+  // Highly optimized parallax effect with requestAnimationFrame and throttling
   useEffect(() => {
+    let frameId: number | null = null;
+    let lastScrollPosition = window.scrollY;
+    let scheduledAnimationFrame = false;
+    const handleScroll = () => {
+      lastScrollPosition = window.scrollY;
+      if (!scheduledAnimationFrame) {
+        scheduledAnimationFrame = true;
+        frameId = requestAnimationFrame(() => {
+          if (profileRef.current && contentRef.current) {
+            // Use transform for GPU acceleration
+            profileRef.current.style.transform = `translateY(${lastScrollPosition * 0.05}px) rotateZ(${lastScrollPosition * 0.005}deg)`;
+            contentRef.current.style.transform = `translateY(${lastScrollPosition * 0.03}px)`;
+          }
+          scheduledAnimationFrame = false;
+        });
+      }
+    };
     window.addEventListener('scroll', handleScroll, {
       passive: true
     });
     return () => {
       window.removeEventListener('scroll', handleScroll);
+      if (frameId !== null) {
+        cancelAnimationFrame(frameId);
+      }
     };
-  }, [handleScroll]);
+  }, []);
   return <section id="hero" ref={heroRef} className="relative pt-32 md:pt-40 pb-16 md:pb-32 w-full overflow-hidden">
       {/* Animated gradient overlay */}
       <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple-light/10 to-royal-blue-light/10 dark:from-royal-purple-dark/20 dark:to-royal-blue-dark/20 z-0 transition-opacity duration-1500 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{
@@ -138,16 +140,17 @@ const Hero = () => {
           transitionDelay: '1.1s',
           willChange: 'transform, opacity'
         }}>
-            <a href="#contact" className="px-8 py-4 bg-royal-purple dark:bg-royal-gold text-white dark:text-royal-black font-medium rounded-full hover:shadow-royal dark:hover:shadow-gold transition-all duration-500 transform hover:translate-y-[-5px] hover:scale-105 relative overflow-hidden group" style={{
+            <a href="#contact" className="px-8 py-4 bg-royal-purple dark:bg-royal-gold text-white dark:text-royal-black font-medium rounded-full hover:shadow-royal dark:hover:shadow-gold transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105 relative overflow-hidden group" style={{
             willChange: 'transform, box-shadow'
           }}>
               <span className="relative z-10">Get In Touch</span>
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-purple-light to-royal-purple dark:from-royal-gold-light dark:to-royal-gold opacity-0 group-hover:opacity-100 transition-opacity duration-500"></span>
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-purple-light to-royal-purple dark:from-royal-gold-light dark:to-royal-gold opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
             </a>
-            <a href="#projects" className="px-8 py-4 border-2 border-royal-purple dark:border-royal-gold text-royal-purple dark:text-royal-gold font-medium rounded-full hover:bg-royal-purple/10 dark:hover:bg-royal-gold/10 transition-all duration-500 transform hover:translate-y-[-5px]" style={{
+            <a href="/resume.pdf" download="Roobaan_MT_Resume.pdf" className="resume-button px-8 py-4 border-2 border-royal-gold bg-royal-gold/10 dark:bg-royal-gold/20 text-royal-purple dark:text-royal-gold font-medium rounded-full hover:bg-royal-gold/20 dark:hover:bg-royal-gold/30 transition-all duration-200 transform hover:translate-y-[-5px] flex items-center gap-2" style={{
             willChange: 'transform'
           }}>
-              View Projects
+              <DownloadIcon size={18} />
+              <span>Download Resume</span>
             </a>
           </div>
           <div className={`flex gap-6 mt-10 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
@@ -176,7 +179,7 @@ const Hero = () => {
           willChange: 'transform'
         }}>
             <div className="w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-royal-gold/30 dark:border-royal-gold/20 shadow-royal dark:shadow-gold animate-float transform hover:rotate-3 transition-all duration-1000">
-              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80" alt="Profile" className="w-full h-full object-cover" loading="lazy" />
+              <img src={profileImg} alt="Roobaan M T - Profile" className="w-full h-full object-cover" loading="eager" fetchpriority="high" />
               {/* Shimmering overlay effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
               {/* Cinematic reveal effect */}

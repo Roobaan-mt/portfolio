@@ -132,7 +132,7 @@ const Skills = () => {
             Additional Skills
           </h3>
           <div className="flex flex-wrap justify-center gap-4">
-            {additionalSkills.map((skill, index) => <span key={skill} className={`glass backdrop-blur-md px-6 py-3 rounded-full border border-royal-purple/20 dark:border-royal-gold/20 text-gray-800 dark:text-royal-white hover:border-royal-gold hover:shadow-gold transition-all duration-500 transform hover:scale-105 hover:-translate-y-1 transition-all duration-700 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+            {additionalSkills.map((skill, index) => <span key={skill} className={`skill-tag glass backdrop-blur-md px-6 py-3 rounded-full border border-royal-purple/20 dark:border-royal-gold/20 text-gray-800 dark:text-royal-white hover:border-royal-gold hover:shadow-gold transition-all duration-200 transform hover:scale-105 hover:-translate-y-1 transition-all duration-700 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
             transitionDelay: getAdditionalSkillDelay(index),
             willChange: 'transform, opacity, box-shadow'
           }}>
@@ -144,7 +144,7 @@ const Skills = () => {
         transitionDelay: '1s',
         willChange: 'transform, opacity'
       }}>
-          <div className="glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 transform transition-all duration-500 hover:shadow-gold hover:-translate-y-2">
+          <div className="glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 transform transition-all duration-200 hover:shadow-gold hover:-translate-y-2">
             <h3 className="text-xl font-serif font-semibold text-royal-purple dark:text-royal-gold mb-3">
               Cross-Platform SDK Experience
             </h3>
@@ -169,7 +169,7 @@ const Skills = () => {
         }, {
           value: '4',
           label: 'App Store Apps'
-        }].map((stat, index) => <div key={index} className={`flex flex-col items-center p-8 glass backdrop-blur-md rounded-xl shadow-elegant border border-royal-gold/10 transform transition-all duration-700 ease-out hover:shadow-gold hover:-translate-y-2 ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        }].map((stat, index) => <div key={index} className={`flex flex-col items-center p-8 glass backdrop-blur-md rounded-xl shadow-elegant border border-royal-gold/10 transform transition-all duration-200 hover:shadow-gold hover:-translate-y-2 ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
           transitionDelay: getStatDelay(index),
           willChange: 'transform, opacity, box-shadow'
         }}>

@@ -95,7 +95,7 @@ const Header = () => {
         }}>
               {item.name}
             </a>)}
-          <button onClick={toggleTheme} className="p-2 rounded-full bg-glass hover:shadow-gold transition-all duration-300 transform hover:scale-110" aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} style={{
+          <button onClick={toggleTheme} className="p-2 rounded-full bg-glass hover:shadow-gold transition-all duration-200 transform hover:scale-110" aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'} style={{
           willChange: 'transform, box-shadow'
         }}>
             {theme === 'dark' ? <SunIcon size={20} className="text-royal-gold" /> : <MoonIcon size={20} className="text-royal-purple" />}

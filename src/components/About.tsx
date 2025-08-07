@@ -1,9 +1,11 @@
 import React, { useEffect, useState, useRef, memo } from 'react';
-import { CodeIcon, SmartphoneIcon, GlobeIcon, BriefcaseIcon } from 'lucide-react';
+import { CodeIcon, SmartphoneIcon, GlobeIcon, BriefcaseIcon, DownloadIcon } from 'lucide-react';
+import profileImg from '../assets/profile.jpg';
 const About = () => {
   const sectionRef = useRef<HTMLDivElement>(null);
   const featuresRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
   // Optimized scroll animation with IntersectionObserver
@@ -75,6 +77,17 @@ const About = () => {
             }}>
                   {paragraph}
                 </p>)}
+            </div>
+            <div className={`mt-8 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+            transitionDelay: '1.1s',
+            willChange: 'transform, opacity'
+          }}>
+              <a href="/resume.pdf" download="Roobaan_MT_Resume.pdf" className="resume-button inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-full hover:shadow-royal transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105" style={{
+              willChange: 'transform, box-shadow'
+            }}>
+                <DownloadIcon size={18} />
+                <span>Download Full Resume</span>
+              </a>
             </div>
           </div>
           <div ref={featuresRef} className="md:w-1/2">

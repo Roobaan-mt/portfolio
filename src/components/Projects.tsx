@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState, useRef, lazy, memo } from 'react';
 import { GithubIcon } from 'lucide-react';
-// Store icons as SVG components
-const AppStoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-blue-600 dark:text-blue-400">
-    <path d="M12 2c5.514 0 10 4.486 10 10s-4.486 10-10 10-10-4.486-10-10 4.486-10 10-10zm0-2c-6.627 0-12 5.373-12 12s5.373 12 12 12 12-5.373 12-12-5.373-12-12-12zm-2 10v-4l6 4-6 4v-4z" />
+// Store icons as SVG components with improved styling
+const AppleIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 384 512" fill="currentColor" className="mr-2">
+    <path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z" />
   </svg>;
-const PlayStoreIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" className="text-green-600 dark:text-green-400">
-    <path d="M3 20.562l7.371-4.49-1.871-1.871-5.5 6.361zm7.371-11.627l-7.371-4.49 5.5 6.361 1.871-1.871zm1.873.704l2.756-2.756-9.327-5.683v11.51l9.327-5.684-2.756-2.757 2.756 2.756v-11.509l-9.327 5.684 2.756 2.755-2.756-2.755-9.327 5.683v11.51l9.327-5.684-2.756-2.756zm0 5.513l2.756 2.756 9.327-5.683v-11.51l-9.327 5.684 2.756 2.755-2.756-2.755-9.327 5.683v11.51l9.327-5.684-2.756-2.756z" />
+const AndroidIcon = () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 576 512" fill="currentColor" className="mr-2">
+    <path d="M420.55,301.93a24,24,0,1,1,24-24,24,24,0,0,1-24,24m-265.1,0a24,24,0,1,1,24-24,24,24,0,0,1-24,24m273.7-144.48,47.94-83a10,10,0,1,0-17.27-10h0l-48.54,84.07a301.25,301.25,0,0,0-246.56,0L116.18,64.45a10,10,0,1,0-17.27,10h0l47.94,83C64.53,202.22,8.24,285.55,0,384H576c-8.24-98.45-64.54-181.78-146.85-226.55" />
   </svg>;
 // Lazy load image component
 const LazyImage = ({
@@ -24,7 +24,7 @@ const LazyImage = ({
       setIsLoaded(true);
     }
   }, []);
-  return <img ref={imgRef} src={src} alt={alt} className={`${className} ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-500`} loading="lazy" onLoad={() => setIsLoaded(true)} />;
+  return <img ref={imgRef} src={src} alt={alt} className={`${className} ${isLoaded ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`} loading="lazy" onLoad={() => setIsLoaded(true)} />;
 };
 const Projects = () => {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -40,7 +40,7 @@ const Projects = () => {
     category: 'ios',
     tags: ['Swift', 'UIKit', 'Firebase', 'RESTful APIs', 'MapKit'],
     liveUrl: 'https://apps.apple.com/in/app/next-peak/id1498192284',
-    githubUrl: '#'
+    hasSourceCode: false
   }, {
     id: 2,
     title: 'SportsDoor',
@@ -49,7 +49,7 @@ const Projects = () => {
     category: 'flutter',
     tags: ['Flutter', 'Dart', 'Firebase', 'Socket.io', 'Google Maps API'],
     liveUrl: 'https://apps.apple.com/in/app/sportsdoor/id6446688928',
-    githubUrl: '#',
+    hasSourceCode: false,
     playStoreUrl: 'https://play.google.com/store/apps/details?id=com.sct.sportsdoor'
   }, {
     id: 3,
@@ -59,8 +59,8 @@ const Projects = () => {
     category: 'flutter',
     tags: ['Flutter', 'Dart', 'Firebase', 'Sqflite', 'Google Maps API'],
     liveUrl: 'https://apps.apple.com/in/app/intelliclaim/id6448627626',
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.sct.intelliclaim',
-    githubUrl: '#'
+    hasSourceCode: false,
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.sct.intelliclaim'
   }, {
     id: 4,
     title: 'Raido',
@@ -69,8 +69,8 @@ const Projects = () => {
     category: 'flutter',
     tags: ['Flutter', 'Dart', 'Firebase', 'Google Maps API'],
     liveUrl: 'https://apps.apple.com/in/app/raido/id6743036332',
-    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.raido.customer',
-    githubUrl: '#'
+    hasSourceCode: false,
+    playStoreUrl: 'https://play.google.com/store/apps/details?id=com.raido.customer'
   }, {
     id: 5,
     title: 'Weather Forecast',
@@ -78,7 +78,8 @@ const Projects = () => {
     image: 'https://images.unsplash.com/photo-1530563885674-66db50a1af19?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=774&q=80',
     category: 'ios',
     tags: ['Swift', 'UIKit', 'RESTful APIs', 'Adaptive Layout'],
-    githubUrl: 'https://github.com/Roobaan/Weather_Forecast'
+    githubUrl: 'https://github.com/Roobaan/Weather_Forecast',
+    hasSourceCode: true
   }, {
     id: 6,
     title: 'Store',
@@ -86,7 +87,8 @@ const Projects = () => {
     image: 'https://images.unsplash.com/photo-1607082350899-7e105aa886ae?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80',
     category: 'ios',
     tags: ['Swift', 'UIKit', 'CoreData', 'No Storyboard'],
-    githubUrl: 'https://github.com/Roobaan/Store'
+    githubUrl: 'https://github.com/Roobaan/Store',
+    hasSourceCode: true
   }];
   const filteredProjects = useCallback(() => {
     return activeFilter === 'all' ? projects.slice(0, visibleProjects) : projects.filter(project => project.category === activeFilter).slice(0, visibleProjects);
@@ -169,7 +171,7 @@ const Projects = () => {
           }, {
             title: 'Flutter Plugin Architecture',
             description: 'Engineered a cross-platform Flutter plugin that integrates with ZifMP to monitor total users, active sessions, crashes, and ANR events across both iOS and Android.'
-          }].map((item, index) => <div key={index} className={`glass backdrop-blur-md p-6 rounded-lg shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-500 transform hover:-translate-y-2 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          }].map((item, index) => <div key={index} className={`glass backdrop-blur-md p-6 rounded-lg shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-200 transform hover:-translate-y-2 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
             transitionDelay: `${0.4 + index * 0.1}s`,
             willChange: 'transform, opacity, box-shadow'
           }}>
@@ -187,7 +189,7 @@ const Projects = () => {
         willChange: 'transform, opacity'
       }}>
           <div className="flex flex-wrap gap-4 justify-center">
-            {['all', 'flutter', 'ios'].map(filter => <button key={filter} className={`px-8 py-3 rounded-full font-serif font-medium transform transition-all duration-500 hover:scale-105 ${activeFilter === filter ? 'bg-gradient-to-r from-royal-purple to-royal-gold text-white shadow-royal' : 'glass backdrop-blur-md text-gray-800 dark:text-gray-200 hover:shadow-royal'}`} onClick={() => {
+            {['all', 'flutter', 'ios'].map(filter => <button key={filter} className={`px-8 py-3 rounded-full font-serif font-medium transform transition-all duration-200 hover:scale-105 ${activeFilter === filter ? 'bg-gradient-to-r from-royal-purple to-royal-gold text-white shadow-royal' : 'glass backdrop-blur-md text-gray-800 dark:text-gray-200 hover:shadow-royal'}`} onClick={() => {
             setActiveFilter(filter);
             setVisibleProjects(6); // Reset visible projects when filter changes
           }} style={{
@@ -198,20 +200,20 @@ const Projects = () => {
           </div>
         </div>
         <div ref={projectsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects().map((project, index) => <div key={project.id} className={`glass backdrop-blur-md rounded-xl overflow-hidden shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-700 ease-out transform hover:-translate-y-3 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          {filteredProjects().map((project, index) => <div key={project.id} className={`glass backdrop-blur-md rounded-xl overflow-hidden shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-200 transform hover:-translate-y-3 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
           transitionDelay: `${0.9 + Math.min(index, 5) * 0.1}s`,
           willChange: 'transform, opacity, box-shadow'
         }}>
               <div className="h-56 overflow-hidden relative">
-                <LazyImage src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-1000 hover:scale-110" />
-                <div className="absolute inset-0 bg-gradient-to-t from-royal-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500 flex items-end p-4">
+                <LazyImage src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
+                <div className="absolute inset-0 bg-gradient-to-t from-royal-black/70 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                   <div className="flex gap-3">
-                    {project.liveUrl && <a href={project.liveUrl} className="flex items-center gap-1 bg-royal-gold/90 text-royal-black px-4 py-2 rounded-full hover:bg-royal-gold transition-colors duration-300" target="_blank" rel="noopener noreferrer">
-                        <AppStoreIcon />
+                    {project.liveUrl && <a href={project.liveUrl} className="store-button flex items-center bg-royal-gold/90 text-royal-black px-4 py-2 rounded-full hover:bg-royal-gold transition-colors duration-200" target="_blank" rel="noopener noreferrer">
+                        <AppleIcon />
                         <span>App Store</span>
                       </a>}
-                    {project.playStoreUrl && <a href={project.playStoreUrl} className="flex items-center gap-1 bg-royal-blue/90 text-white px-4 py-2 rounded-full hover:bg-royal-blue transition-colors duration-300" target="_blank" rel="noopener noreferrer">
-                        <PlayStoreIcon />
+                    {project.playStoreUrl && <a href={project.playStoreUrl} className="store-button flex items-center bg-royal-blue/90 text-white px-4 py-2 rounded-full hover:bg-royal-blue transition-colors duration-200" target="_blank" rel="noopener noreferrer">
+                        <AndroidIcon />
                         <span>Play Store</span>
                       </a>}
                   </div>
@@ -225,12 +227,12 @@ const Projects = () => {
                   {project.description}
                 </p>
                 <div className="flex flex-wrap gap-2 mb-4">
-                  {project.tags.map(tag => <span key={tag} className="bg-royal-purple/10 dark:bg-royal-purple/20 text-royal-purple dark:text-royal-gold-light px-3 py-1 text-sm rounded-full hover:bg-royal-purple/20 dark:hover:bg-royal-purple/30 transition-colors duration-300">
+                  {project.tags.map(tag => <span key={tag} className="skill-tag bg-royal-purple/10 dark:bg-royal-purple/20 text-royal-purple dark:text-royal-gold-light px-3 py-1 text-sm rounded-full hover:bg-royal-purple/20 dark:hover:bg-royal-purple/30 transition-colors duration-200">
                       {tag}
                     </span>)}
                 </div>
                 <div className="flex flex-wrap gap-3 mt-6">
-                  {project.githubUrl && <a href={project.githubUrl} className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:text-royal-purple dark:hover:text-royal-gold transition-colors duration-300" target="_blank" rel="noopener noreferrer">
+                  {project.hasSourceCode && project.githubUrl && <a href={project.githubUrl} className="flex items-center gap-2 text-gray-800 dark:text-gray-200 hover:text-royal-purple dark:hover:text-royal-gold transition-colors duration-200" target="_blank" rel="noopener noreferrer">
                       <GithubIcon size={18} />
                       <span>Source Code</span>
                     </a>}
