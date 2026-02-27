@@ -92,65 +92,65 @@ const Hero = () => {
   }, []);
   return <section id="hero" ref={heroRef} className="relative pt-32 md:pt-40 pb-16 md:pb-32 w-full overflow-hidden">
       {/* Animated gradient overlay */}
-      <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple-light/10 to-royal-blue-light/10 dark:from-royal-purple-dark/20 dark:to-royal-blue-dark/20 z-0 transition-opacity duration-1500 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{
+      <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple-light/10 to-royal-blue-light/10 dark:from-royal-purple-dark/20 dark:to-royal-blue-dark/20 z-0 transition-opacity duration-600 ${isVisible ? 'opacity-100' : 'opacity-0'}`} style={{
       backgroundSize: '200% 200%',
       animation: isVisible ? 'gradientFlow 15s ease infinite' : 'none',
       willChange: 'background-position'
     }}></div>
       {/* Decorative elements */}
-      <div className={`absolute left-1/4 top-1/4 w-64 h-64 rounded-full bg-royal-gold/5 dark:bg-royal-gold/10 blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      <div className={`absolute left-1/4 top-1/4 w-64 h-64 rounded-full bg-royal-gold/5 dark:bg-royal-gold/10 blur-3xl transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
       transformOrigin: 'center',
       animationDelay: '0.3s',
-      willChange: 'transform, opacity'
+      willChange: isVisible ? 'auto' : 'transform, opacity'
     }}></div>
-      <div className={`absolute right-1/4 bottom-1/4 w-80 h-80 rounded-full bg-royal-purple/5 dark:bg-royal-purple/10 blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      <div className={`absolute right-1/4 bottom-1/4 w-80 h-80 rounded-full bg-royal-purple/5 dark:bg-royal-purple/10 blur-3xl transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
       transformOrigin: 'center',
       animationDelay: '0.6s',
-      willChange: 'transform, opacity'
+      willChange: isVisible ? 'auto' : 'transform, opacity'
     }}></div>
       <div className="container mx-auto px-4 md:px-6 flex flex-col md:flex-row items-center relative z-10">
         <div ref={contentRef} className="md:w-1/2 mb-10 md:mb-0" style={{
         willChange: 'transform'
       }}>
-          <div className={`mb-4 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <div className={`mb-4 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '0.2s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             <span className="inline-flex items-center gap-2 px-3 py-1 text-sm font-sans bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/25 rounded-full">
               <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
               Open to opportunities
             </span>
           </div>
-          <p className={`text-royal-purple dark:text-royal-gold font-serif font-semibold mb-2 text-lg transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <p className={`text-royal-purple dark:text-royal-gold font-serif font-semibold mb-2 text-lg transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '0.3s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             Hello, I'm
           </p>
-          <h1 className={`text-5xl md:text-6xl lg:text-7xl font-serif font-bold mb-4 gradient-text transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <h1 className={`text-5xl md:text-6xl lg:text-7xl font-serif font-bold mb-4 gradient-text transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '0.5s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             Roobaan M T
           </h1>
-          <div className={`text-2xl md:text-3xl text-gray-800 dark:text-royal-white mb-6 h-10 font-serif transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <div className={`text-2xl md:text-3xl text-gray-800 dark:text-royal-white mb-6 h-10 font-serif transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '0.7s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             <span>{displayText}</span>
             <span className="animate-pulse inline-block w-1 h-6 ml-1 bg-royal-gold"></span>
           </div>
-          <p className={`text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-lg font-sans leading-relaxed transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <p className={`text-xl text-gray-700 dark:text-gray-300 mb-8 max-w-lg font-sans leading-relaxed transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '0.9s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             iOS and Flutter developer with 4+ years shipping production apps —
             from banking tools used by 9,000+ employees to ride-hailing and
             insurance platforms live on both stores.
           </p>
-          <div className={`flex flex-wrap gap-4 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <div className={`flex flex-wrap gap-4 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '1.1s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             <a href="#contact" className="px-8 py-4 bg-royal-purple dark:bg-royal-gold text-white dark:text-royal-black font-medium rounded-full hover:shadow-royal dark:hover:shadow-gold transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105 relative overflow-hidden group" style={{
             willChange: 'transform, box-shadow'
@@ -165,9 +165,9 @@ const Hero = () => {
               <span>View Resume</span>
             </a>
           </div>
-          <div className={`flex gap-6 mt-10 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          <div className={`flex gap-6 mt-10 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '1.3s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             <a href={SOCIAL.github} className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
             willChange: 'transform'
@@ -183,48 +183,48 @@ const Hero = () => {
             </a>
           </div>
         </div>
-        <div className={`md:w-1/2 flex justify-center md:justify-end transition-all duration-1500 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`} style={{
+        <div className={`md:w-1/2 flex justify-center md:justify-end transition-[transform,opacity] duration-600 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-95'}`} style={{
         transitionDelay: '0.6s',
-        willChange: 'transform, opacity'
+        willChange: animationStarted ? 'auto' : 'transform, opacity'
       }}>
           <div ref={profileRef} className="relative" style={{
           willChange: 'transform'
         }}>
-            <div className="w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-royal-gold/30 dark:border-royal-gold/20 shadow-royal dark:shadow-gold animate-float transform hover:rotate-3 transition-all duration-1000">
+            <div className="w-72 h-72 md:w-96 md:h-96 rounded-full overflow-hidden border-4 border-royal-gold/30 dark:border-royal-gold/20 shadow-royal dark:shadow-gold animate-float transform hover:rotate-3 transition-[transform,opacity] duration-500">
               <img src={profileImg} alt="Roobaan M T - Profile" className="w-full h-full object-cover" loading="eager" fetchpriority="high" />
               {/* Shimmering overlay effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-shimmer"></div>
               {/* Cinematic reveal effect */}
-              <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple to-royal-gold transition-all duration-2000 ease-out ${isVisible ? 'opacity-0' : 'opacity-100'}`} style={{
+              <div className={`absolute inset-0 bg-gradient-to-br from-royal-purple to-royal-gold transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-0' : 'opacity-100'}`} style={{
               willChange: 'opacity'
             }}></div>
             </div>
-            <div className={`absolute -bottom-4 -right-4 glass backdrop-blur-md p-4 rounded-lg shadow-elegant animate-pulse-slow transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0 translate-x-0' : 'opacity-0 translate-y-8 translate-x-8'}`} style={{
+            <div className={`absolute -bottom-4 -right-4 glass backdrop-blur-md p-4 rounded-lg shadow-elegant animate-pulse-slow transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0 translate-x-0' : 'opacity-0 translate-y-3 translate-x-3'}`} style={{
             transitionDelay: '1.2s',
-            willChange: 'transform, opacity'
+            willChange: animationStarted ? 'auto' : 'transform, opacity'
           }}>
               <p className="font-serif font-bold text-royal-purple dark:text-royal-gold">
                 4+ Years Experience
               </p>
             </div>
             {/* Decorative elements with staggered animations */}
-            <div className={`absolute -top-10 -left-10 w-20 h-20 rounded-full bg-royal-gold/20 dark:bg-royal-gold/10 transition-all duration-1500 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{
+            <div className={`absolute -top-10 -left-10 w-20 h-20 rounded-full bg-royal-gold/20 dark:bg-royal-gold/10 transition-[transform,opacity] duration-600 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{
             transitionDelay: '1.5s',
-            willChange: 'transform, opacity',
+            willChange: animationStarted ? 'auto' : 'transform, opacity',
             animation: animationStarted ? 'pulse 3s ease-in-out infinite' : 'none'
           }}></div>
-            <div className={`absolute -bottom-10 -left-16 w-16 h-16 rounded-full bg-royal-purple/20 dark:bg-royal-purple/10 transition-all duration-1500 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{
+            <div className={`absolute -bottom-10 -left-16 w-16 h-16 rounded-full bg-royal-purple/20 dark:bg-royal-purple/10 transition-[transform,opacity] duration-600 ease-out ${animationStarted ? 'opacity-100 scale-100' : 'opacity-0 scale-0'}`} style={{
             transitionDelay: '1.7s',
-            willChange: 'transform, opacity',
+            willChange: animationStarted ? 'auto' : 'transform, opacity',
             animation: animationStarted ? 'float 6s ease-in-out infinite' : 'none',
             animationDelay: '1s'
           }}></div>
           </div>
         </div>
       </div>
-      <div className={`container mx-auto px-4 md:px-6 flex justify-center mt-16 md:mt-24 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+      <div className={`container mx-auto px-4 md:px-6 flex justify-center mt-16 md:mt-24 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
       transitionDelay: '2s',
-      willChange: 'transform, opacity'
+      willChange: animationStarted ? 'auto' : 'transform, opacity'
     }}>
         <a href="#about" className="flex items-center gap-2 text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-500 transform hover:translate-y-2 group" style={{
         willChange: 'transform'

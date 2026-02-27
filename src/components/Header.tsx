@@ -78,7 +78,7 @@ const Header = () => {
       window.history.pushState(null, '', href);
     }
   };
-  return <header ref={headerRef} className={`fixed top-0 w-full z-50 transition-all duration-500 ${isScrolled ? 'glass py-3 backdrop-blur-md shadow-md' : 'bg-transparent py-6'} ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`} style={{
+  return <header ref={headerRef} className={`fixed top-0 w-full z-50 transition-[transform,opacity,background-color,box-shadow] duration-300 ${isScrolled ? 'glass py-3 backdrop-blur-md shadow-md' : 'bg-transparent py-6'} ${isVisible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'}`} style={{
     willChange: 'transform, opacity'
   }}>
       <div className="container mx-auto px-4 md:px-6 flex justify-between items-center">
@@ -112,10 +112,8 @@ const Header = () => {
         </div>
       </div>
       {/* Mobile Navigation Menu - Using transform instead of height for better performance */}
-      <div className={`md:hidden glass backdrop-blur-md transition-all duration-500 ease-in-out ${isMenuOpen ? 'opacity-100 transform-none' : 'opacity-0 -translate-y-full'}`} style={{
-      willChange: 'transform, opacity',
-      maxHeight: isMenuOpen ? '300px' : '0',
-      overflow: 'hidden'
+      <div className={`md:hidden glass backdrop-blur-md overflow-hidden transition-[transform,opacity,background-color,box-shadow] duration-300 ease-in-out ${isMenuOpen ? 'opacity-100 transform-none' : 'opacity-0 -translate-y-full'}`} style={{
+      willChange: 'transform, opacity'
     }}>
         <div className="container mx-auto px-4 py-3">
           <nav className="flex flex-col space-y-3">

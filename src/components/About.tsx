@@ -40,7 +40,7 @@ const About = () => {
     // Observe feature cards with staggered animation
     const featureElements = featuresRef.current?.querySelectorAll('.feature-card');
     featureElements?.forEach((el, i) => {
-      el.classList.add('opacity-0', 'translate-y-10');
+      el.classList.add('opacity-0', 'translate-y-3');
       // Stagger animation delay
       el.style.transitionDelay = `${i * 0.15}s`;
       observer.observe(el);
@@ -49,18 +49,18 @@ const About = () => {
   }, [isVisible]);
   return <section id="about" className="py-20 md:py-32 bg-white dark:bg-royal-black w-full transition-colors duration-500 relative overflow-hidden">
       {/* Background decorations with cinematic animations */}
-      <div className={`absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      <div className={`absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
       transformOrigin: 'center',
-      willChange: 'transform, opacity'
+      willChange: animationStarted ? 'auto' : 'transform, opacity'
     }}></div>
-      <div className={`absolute bottom-0 left-0 w-96 h-96 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl transition-all duration-2000 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
+      <div className={`absolute bottom-0 left-0 w-96 h-96 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
       transformOrigin: 'center',
       transitionDelay: '0.3s',
-      willChange: 'transform, opacity'
+      willChange: animationStarted ? 'auto' : 'transform, opacity'
     }}></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div ref={sectionRef} className="text-center mb-16 opacity-0 translate-y-10 transition-all duration-1000 ease-out" style={{
-        willChange: 'transform, opacity'
+        <div ref={sectionRef} className="text-center mb-16 opacity-0 translate-y-3 transition-[transform,opacity] duration-500 ease-out" style={{
+        willChange: animationStarted ? 'auto' : 'transform, opacity'
       }}>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
             About Me
@@ -68,21 +68,21 @@ const About = () => {
           <div className="w-24 h-1 bg-gradient-to-r from-royal-purple to-royal-gold mx-auto mb-6"></div>
         </div>
         <div className="flex flex-col md:flex-row gap-16 items-center">
-          <div ref={contentRef} className={`md:w-1/2 opacity-0 translate-y-10 transition-all duration-1000 ease-out ${animationStarted ? 'animate-in' : ''}`} style={{
+          <div ref={contentRef} className={`md:w-1/2 opacity-0 translate-y-3 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'animate-in' : ''}`} style={{
           transitionDelay: '0.3s',
-          willChange: 'transform, opacity'
+          willChange: animationStarted ? 'auto' : 'transform, opacity'
         }}>
             <div className="space-y-6">
-              {["I'm an iOS and Flutter developer with 4+ years of experience building and shipping production mobile apps. My work spans native iOS development with Swift, UIKit, and SwiftUI through to cross-platform Flutter — including specialized implementation of the ZifMP SDK across iOS, Android, and Flutter platforms.", "Based in Chennai, I've worked with GAVS Technologies, SivaCerulean Technologies, and Innovix Software Technologies, contributing to apps now live on the App Store and Google Play. I focus on reliable API integration, offline-capable data layers, and UIs that hold up on real devices."].map((paragraph, index) => <p key={index} className={`text-lg text-gray-800 dark:text-gray-200 font-sans leading-relaxed transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+              {["I'm an iOS and Flutter developer with 4+ years of experience building and shipping production mobile apps. My work spans native iOS development with Swift, UIKit, and SwiftUI through to cross-platform Flutter — including specialized implementation of the ZifMP SDK across iOS, Android, and Flutter platforms.", "Based in Chennai, I've worked with GAVS Technologies, SivaCerulean Technologies, and Innovix Software Technologies, contributing to apps now live on the App Store and Google Play. I focus on reliable API integration, offline-capable data layers, and UIs that hold up on real devices."].map((paragraph, index) => <p key={index} className={`text-lg text-gray-800 dark:text-gray-200 font-sans leading-relaxed transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
               transitionDelay: `${0.5 + index * 0.2}s`,
-              willChange: 'transform, opacity'
+              willChange: animationStarted ? 'auto' : 'transform, opacity'
             }}>
                   {paragraph}
                 </p>)}
             </div>
-            <div className={`mt-8 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+            <div className={`mt-8 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
             transitionDelay: '1.1s',
-            willChange: 'transform, opacity'
+            willChange: animationStarted ? 'auto' : 'transform, opacity'
           }}>
               <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="resume-button inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-full hover:shadow-royal transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105" style={{
               willChange: 'transform, box-shadow'
@@ -114,25 +114,25 @@ const About = () => {
               title: 'Professional Experience',
               description: 'Worked with GAVS Technologies, SivaCerulean Technologies, and Innovix Software Technologies.',
               bgClass: 'bg-gradient-to-br from-royal-purple-light to-royal-blue-light dark:from-royal-purple dark:to-royal-blue'
-            }].map((feature, index) => <div key={index} className="feature-card glass backdrop-blur-md p-8 rounded-xl shadow-elegant transform transition-all duration-700 ease-out card-3d" style={{
-              willChange: 'transform, opacity, box-shadow',
+            }].map((feature, index) => <div key={index} className="feature-card glass backdrop-blur-md p-8 rounded-xl shadow-elegant transform transition-[transform,opacity] duration-400 ease-out card-3d" style={{
+              willChange: animationStarted ? 'auto' : 'transform, opacity, box-shadow',
               transformOrigin: 'center'
             }}>
-                  <div className={`${feature.bgClass} p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-royal transition-all duration-1000 ease-out ${animationStarted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{
+                  <div className={`${feature.bgClass} p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-royal transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{
                 transitionDelay: `${0.6 + index * 0.15}s`,
-                willChange: 'transform, opacity'
+                willChange: animationStarted ? 'auto' : 'transform, opacity'
               }}>
                     {feature.icon}
                   </div>
-                  <h3 className={`text-xl font-serif font-semibold mb-3 text-gray-900 dark:text-white transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
+                  <h3 className={`text-xl font-serif font-semibold mb-3 text-gray-900 dark:text-white transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
                 transitionDelay: `${0.7 + index * 0.15}s`,
-                willChange: 'transform, opacity'
+                willChange: animationStarted ? 'auto' : 'transform, opacity'
               }}>
                     {feature.title}
                   </h3>
-                  <p className={`text-gray-700 dark:text-gray-300 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
+                  <p className={`text-gray-700 dark:text-gray-300 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
                 transitionDelay: `${0.8 + index * 0.15}s`,
-                willChange: 'transform, opacity'
+                willChange: animationStarted ? 'auto' : 'transform, opacity'
               }}>
                     {feature.description}
                   </p>

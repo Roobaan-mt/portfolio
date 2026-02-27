@@ -80,6 +80,7 @@ const ParticleBackground = () => {
       const width = canvas.width / (window.devicePixelRatio || 1);
       const height = canvas.height / (window.devicePixelRatio || 1);
       // Clear with a fade effect instead of full clear for smoother visuals
+      ctx.globalAlpha = 1;
       ctx.fillStyle = theme === 'dark' ? 'rgba(18, 18, 18, 0.2)' : 'rgba(255, 255, 255, 0.2)';
       ctx.fillRect(0, 0, width, height);
       const particles = particlesRef.current;
@@ -157,8 +158,7 @@ const ParticleBackground = () => {
     };
   }, [theme, colors]);
   return <canvas ref={canvasRef} className="fixed top-0 left-0 w-full h-full pointer-events-none z-0" style={{
-    opacity: theme === 'dark' ? 0.4 : 0.3,
-    willChange: 'transform'
+    opacity: theme === 'dark' ? 0.4 : 0.3
   }} />;
 };
 export default memo(ParticleBackground);

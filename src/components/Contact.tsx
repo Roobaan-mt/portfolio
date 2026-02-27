@@ -64,7 +64,7 @@ const Contact = () => {
       <div className="absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl"></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className={`text-center mb-16 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+        <div className={`text-center mb-16 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`}>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
             Get In Touch
           </h2>
@@ -75,8 +75,9 @@ const Contact = () => {
           </p>
         </div>
         <div className="flex flex-col md:flex-row gap-10 max-w-5xl mx-auto">
-          <div className={`md:w-2/5 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-10'}`} style={{
-          transitionDelay: '0.3s'
+          <div className={`md:w-2/5 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-3'}`} style={{
+          transitionDelay: '0.3s',
+          willChange: isVisible ? 'auto' : 'transform, opacity'
         }}>
             <div className="glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 hover:shadow-gold transition-all duration-500 transform hover:-translate-y-2">
               <h3 className="text-2xl font-serif font-bold mb-8 text-royal-purple dark:text-royal-gold">
@@ -146,8 +147,9 @@ const Contact = () => {
               </div>
             </div>
           </div>
-          <div className={`md:w-3/5 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-10'}`} style={{
-          transitionDelay: '0.5s'
+          <div className={`md:w-3/5 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-3'}`} style={{
+          transitionDelay: '0.5s',
+          willChange: isVisible ? 'auto' : 'transform, opacity'
         }}>
             <form onSubmit={handleSubmit} className="glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 hover:shadow-gold transition-all duration-500">
               <h3 className="text-2xl font-serif font-bold mb-8 text-royal-purple dark:text-royal-gold">

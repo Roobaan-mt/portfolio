@@ -135,8 +135,8 @@ const Projects = () => {
       <div className="absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl"></div>
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl"></div>
       <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div className={`text-center mb-16 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
-        willChange: 'transform, opacity'
+        <div className={`text-center mb-16 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
+        willChange: isVisible ? 'auto' : 'transform, opacity'
       }}>
           <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
             My Projects
@@ -147,9 +147,9 @@ const Projects = () => {
             and iOS. I've worked on 10+ projects throughout my career.
           </p>
         </div>
-        <div className={`mb-16 max-w-5xl mx-auto glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        <div className={`mb-16 max-w-5xl mx-auto glass backdrop-blur-md p-8 rounded-xl shadow-elegant border border-royal-gold/10 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
         transitionDelay: '0.3s',
-        willChange: 'transform, opacity'
+        willChange: isVisible ? 'auto' : 'transform, opacity'
       }}>
           <h3 className="text-2xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-6">
             ZifMP SDK Implementation Expertise
@@ -171,9 +171,9 @@ const Projects = () => {
           }, {
             title: 'Flutter Plugin Architecture',
             description: 'Engineered a cross-platform Flutter plugin that integrates with ZifMP to monitor total users, active sessions, crashes, and ANR events across both iOS and Android.'
-          }].map((item, index) => <div key={index} className={`glass backdrop-blur-md p-6 rounded-lg shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-200 transform hover:-translate-y-2 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          }].map((item, index) => <div key={index} className={`glass backdrop-blur-md p-6 rounded-lg shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-[transform,opacity,box-shadow] duration-200 transform hover:-translate-y-2 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
             transitionDelay: `${0.4 + index * 0.1}s`,
-            willChange: 'transform, opacity, box-shadow'
+            willChange: isVisible ? 'auto' : 'transform, opacity, box-shadow'
           }}>
                 <h4 className="font-serif font-semibold text-royal-purple dark:text-royal-gold mb-3">
                   {item.title}
@@ -184,9 +184,9 @@ const Projects = () => {
               </div>)}
           </div>
         </div>
-        <div className={`flex justify-center mb-12 transition-all duration-1000 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+        <div className={`flex justify-center mb-12 transition-[transform,opacity] duration-500 ease-out ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
         transitionDelay: '0.8s',
-        willChange: 'transform, opacity'
+        willChange: isVisible ? 'auto' : 'transform, opacity'
       }}>
           <div className="flex flex-wrap gap-4 justify-center">
             {['all', 'flutter', 'ios'].map(filter => <button key={filter} className={`px-8 py-3 rounded-full font-serif font-medium transform transition-all duration-200 hover:scale-105 ${activeFilter === filter ? 'bg-gradient-to-r from-royal-purple to-royal-gold text-white shadow-royal' : 'glass backdrop-blur-md text-gray-800 dark:text-gray-200 border border-royal-purple/20 dark:border-royal-gold/20 hover:border-royal-purple/40 dark:hover:border-royal-gold/40 hover:shadow-royal'}`} onClick={() => {
@@ -200,9 +200,9 @@ const Projects = () => {
           </div>
         </div>
         <div ref={projectsRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {filteredProjects().map((project, index) => <div key={project.id} className={`glass backdrop-blur-md rounded-xl overflow-hidden shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-all duration-200 transform hover:-translate-y-3 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`} style={{
+          {filteredProjects().map((project, index) => <div key={project.id} className={`glass backdrop-blur-md rounded-xl overflow-hidden shadow-elegant border border-royal-gold/10 hover:shadow-gold hover:border-royal-gold/30 transition-[transform,opacity,box-shadow] duration-200 transform hover:-translate-y-3 ${isVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: `${0.9 + Math.min(index, 5) * 0.1}s`,
-          willChange: 'transform, opacity, box-shadow'
+          willChange: isVisible ? 'auto' : 'transform, opacity, box-shadow'
         }}>
               <div className="h-56 overflow-hidden relative">
                 <LazyImage src={project.image} alt={project.title} className="w-full h-full object-cover transition-transform duration-500 hover:scale-110" />
