@@ -1,39 +1,86 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useRef } from 'react';
+import { motion, useMotionValue, useSpring, useTransform, useInView } from 'framer-motion';
 import { GithubIcon, LinkedinIcon, ArrowDownIcon, DownloadIcon, ExternalLinkIcon } from 'lucide-react';
 import { SOCIAL } from '../data/social';
 
 const ROLES = ['iOS Developer', 'Flutter Developer', 'Mobile App Expert'];
 
 const PHONE_APPS = [
-  { name: 'NextPeak',    sub: '9,000+ users · Banking',   from: 'from-blue-600',   to: 'to-blue-800',   initial: 'N' },
-  { name: 'SportsDoor',  sub: 'iOS & Android · Sports',   from: 'from-green-500',  to: 'to-emerald-700',initial: 'S' },
-  { name: 'Intelliclaim',sub: 'iOS & Android · Insurance',from: 'from-violet-600', to: 'to-purple-800', initial: 'I' },
-  { name: 'Raido',       sub: 'iOS & Android · Ride',     from: 'from-orange-500', to: 'to-red-600',    initial: 'R' },
+  { name: 'NextPeak',     sub: '9,000+ users · Banking',    from: 'from-blue-600',   to: 'to-blue-800',   initial: 'N' },
+  { name: 'SportsDoor',  sub: 'iOS & Android · Sports',    from: 'from-green-500',  to: 'to-emerald-700',initial: 'S' },
+  { name: 'Intelliclaim',sub: 'iOS & Android · Insurance', from: 'from-violet-600', to: 'to-purple-800', initial: 'I' },
+  { name: 'Raido',       sub: 'iOS & Android · Ride',      from: 'from-orange-500', to: 'to-red-600',    initial: 'R' },
 ];
 
 const FLOAT_TAGS = [
-  { text: '#Swift',   color: 'text-orange-300 border-orange-500/30 bg-orange-500/10', delay: 0 },
+  { text: '#Swift',   color: 'text-orange-300 border-orange-500/30 bg-orange-500/10', delay: 0   },
   { text: '#Flutter', color: 'text-cyan-300 border-cyan-500/30 bg-cyan-500/10',       delay: 1.5 },
-  { text: '#iOS',     color: 'text-blue-300 border-blue-500/30 bg-blue-500/10',       delay: 3 },
+  { text: '#iOS',     color: 'text-blue-300 border-blue-500/30 bg-blue-500/10',       delay: 3   },
   { text: '#Dart',    color: 'text-teal-300 border-teal-500/30 bg-teal-500/10',       delay: 4.5 },
 ];
 
-const item = {
-  hidden:  { opacity: 0, y: 18 },
-  show:    { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
-};
+// ── Magnetic button ───────────────────────────────────────────────────────────
+function MagneticButton({
+  children, href, className, target, rel,
+}: {
+  children: React.ReactNode;
+  href: string;
+  className: string;
+  target?: string;
+  rel?: string;
+}) {
+  const bx = useMotionValue(0);
+  const by = useMotionValue(0);
+  const sx = useSpring(bx, { stiffness: 220, damping: 18 });
+  const sy = useSpring(by, { stiffness: 220, damping: 18 });
 
-const stagger = {
-  hidden: {},
-  show:   { transition: { staggerChildren: 0.1 } },
-};
+  const onMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    const r = e.currentTarget.getBoundingClientRect();
+    bx.set((e.clientX - r.left - r.width  / 2) * 0.3);
+    by.set((e.clientY - r.top  - r.height / 2) * 0.3);
+  };
 
+  return (
+    <motion.a
+      href={href}
+      target={target}
+      rel={rel}
+      className={className}
+      style={{ x: sx, y: sy }}
+      onMouseMove={onMove}
+      onMouseLeave={() => { bx.set(0); by.set(0); }}
+    >
+      {children}
+    </motion.a>
+  );
+}
+
+// ── Count-up hook ─────────────────────────────────────────────────────────────
+function useCountUp(target: number, inView: boolean, duration = 1600) {
+  const [v, setV] = useState(0);
+  useEffect(() => {
+    if (!inView) return;
+    const t0 = performance.now();
+    let raf: number;
+    const tick = (now: number) => {
+      const p = Math.min((now - t0) / duration, 1);
+      const eased = 1 - Math.pow(1 - p, 3); // ease-out-cubic
+      setV(Math.round(eased * target));
+      if (p < 1) raf = requestAnimationFrame(tick);
+    };
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, [inView, target, duration]);
+  return v;
+}
+
+// ── Component ─────────────────────────────────────────────────────────────────
 export default function Hero() {
   const [roleIdx, setRoleIdx]   = useState(0);
   const [text, setText]         = useState('');
   const [deleting, setDeleting] = useState(false);
 
+  // Typewriter
   useEffect(() => {
     const current = ROLES[roleIdx];
     const id = setTimeout(() => {
@@ -42,17 +89,44 @@ export default function Hero() {
         if (text === current) setTimeout(() => setDeleting(true), 1400);
       } else {
         setText(current.slice(0, text.length - 1));
-        if (text === '') {
-          setDeleting(false);
-          setRoleIdx(i => (i + 1) % ROLES.length);
-        }
+        if (text === '') { setDeleting(false); setRoleIdx(i => (i + 1) % ROLES.length); }
       }
     }, deleting ? 38 : 72);
     return () => clearTimeout(id);
   }, [text, deleting, roleIdx]);
 
+  // Mouse parallax for phone.
+  // Default values replicate the old CSS tilt: rotateY(-6deg), rotateX(+2deg).
+  // Range [-0.5, 0.5] → rotateY [-8, 8]:  at -0.375 → -6deg ✓
+  // Range [-0.5, 0.5] → rotateX [ 5,-5]:  at -0.2   → +3deg ≈ ✓
+  const mouseX = useMotionValue(-0.375);
+  const mouseY = useMotionValue(-0.2);
+  const rawRY  = useTransform(mouseX, [-0.5, 0.5], [-8, 8]);
+  const rawRX  = useTransform(mouseY, [-0.5, 0.5], [5, -5]);
+  const rotateY = useSpring(rawRY, { stiffness: 60, damping: 18 });
+  const rotateX = useSpring(rawRX, { stiffness: 60, damping: 18 });
+
+  const onMouseMove = (e: React.MouseEvent<HTMLElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width - 0.5);
+    mouseY.set((e.clientY - rect.top)  / rect.height - 0.5);
+  };
+  const onMouseLeave = () => { mouseX.set(-0.375); mouseY.set(-0.2); };
+
+  // Count-up stats
+  const statsRef   = useRef<HTMLDivElement>(null);
+  const statsInView = useInView(statsRef, { once: true });
+  const years    = useCountUp(4,  statsInView);
+  const projects = useCountUp(15, statsInView);
+  const apps     = useCountUp(4,  statsInView);
+
   return (
-    <section id="hero" className="relative min-h-screen flex items-center overflow-hidden bg-grid">
+    <section
+      id="hero"
+      onMouseMove={onMouseMove}
+      onMouseLeave={onMouseLeave}
+      className="relative min-h-screen flex items-center overflow-hidden bg-grid"
+    >
       {/* ambient glow */}
       <div className="orb w-[600px] h-[600px] left-[-200px] top-[-100px] bg-violet-600/10" />
       <div className="orb w-[500px] h-[500px] right-[-150px] bottom-[50px] bg-cyan-500/8" />
@@ -60,65 +134,139 @@ export default function Hero() {
       <div className="max-w-6xl mx-auto px-6 w-full pt-24 pb-16 grid grid-cols-1 lg:grid-cols-[1fr_auto] gap-12 lg:gap-20 items-center">
 
         {/* ── Left: Text ── */}
-        <motion.div variants={stagger} initial="hidden" animate="show" className="space-y-7 max-w-xl">
-
-          <motion.div variants={item}>
+        <div className="space-y-7 max-w-xl">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.05 }}
+          >
             <span className="section-label">Mobile Developer · Chennai, India</span>
           </motion.div>
 
-          <motion.h1 variants={item} className="font-serif font-bold leading-[1.1]">
-            <span className="block text-5xl md:text-6xl lg:text-7xl text-white">Roobaan</span>
-            <span className="block text-5xl md:text-6xl lg:text-7xl gradient-text">M T</span>
-          </motion.h1>
+          {/* Character-split headline — each letter slides up from a masked container */}
+          <h1 className="font-serif font-bold leading-[1.1]">
+            <span className="block overflow-hidden">
+              <span className="block text-5xl md:text-6xl lg:text-7xl text-white">
+                {Array.from('Roobaan').map((char, i) => (
+                  <motion.span
+                    key={i}
+                    initial={{ y: '110%', opacity: 0, filter: 'blur(6px)' }}
+                    animate={{ y: '0%',   opacity: 1, filter: 'blur(0px)' }}
+                    transition={{
+                      duration: 0.6,
+                      delay: 0.1 + i * 0.045,
+                      ease: [0.25, 0.46, 0.45, 0.94],
+                    }}
+                    style={{ display: 'inline-block' }}
+                  >
+                    {char}
+                  </motion.span>
+                ))}
+              </span>
+            </span>
 
-          {/* typewriter */}
-          <motion.div variants={item} className="flex items-center gap-2 h-9">
+            <span className="block overflow-hidden mt-1">
+              <motion.span
+                className="block text-5xl md:text-6xl lg:text-7xl gradient-text"
+                initial={{ y: '110%' }}
+                animate={{ y: '0%' }}
+                transition={{ duration: 0.7, delay: 0.42, ease: [0.25, 0.46, 0.45, 0.94] }}
+              >
+                M T
+              </motion.span>
+            </span>
+          </h1>
+
+          {/* Typewriter role */}
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="flex items-center gap-2 h-9"
+          >
             <span className="text-xl md:text-2xl text-slate-300 font-light font-mono">
               {text}
               <span className="inline-block w-[2px] h-6 bg-cyan-400 ml-0.5 align-middle animate-pulse" />
             </span>
           </motion.div>
 
-          <motion.p variants={item} className="text-slate-400 text-lg leading-relaxed">
+          <motion.p
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.85 }}
+            className="text-slate-400 text-lg leading-relaxed"
+          >
             4+ years building production iOS and Flutter apps — shipped to&nbsp;
             <span className="text-white font-medium">9,000+ users</span> across banking,
             sports, insurance, and ride-hailing.
           </motion.p>
 
-          <motion.div variants={item} className="flex flex-wrap gap-3">
-            <a href="#projects" className="btn-primary">
+          {/* Magnetic CTA buttons */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.95 }}
+            className="flex flex-wrap gap-3"
+          >
+            <MagneticButton href="#projects" className="btn-primary">
               View My Work <ExternalLinkIcon size={15} />
-            </a>
-            <a href="/Roobaan_CV.pdf" target="_blank" rel="noopener noreferrer" className="btn-secondary">
+            </MagneticButton>
+            <MagneticButton
+              href="/Roobaan_CV.pdf"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary"
+            >
               Resume <DownloadIcon size={15} />
-            </a>
+            </MagneticButton>
           </motion.div>
 
-          {/* mini stats */}
-          <motion.div variants={item} className="flex gap-8 pt-1">
-            {[['4+', 'Years Exp.'], ['15+', 'Projects'], ['4', 'Published Apps']].map(([v, l]) => (
+          {/* Count-up stats */}
+          <motion.div
+            ref={statsRef}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.05 }}
+            className="flex gap-8 pt-1"
+          >
+            {[
+              { v: years,    s: '+', l: 'Years Exp.'    },
+              { v: projects, s: '+', l: 'Projects'      },
+              { v: apps,     s: '',  l: 'Published Apps' },
+            ].map(({ v, s, l }) => (
               <div key={l}>
-                <p className="text-2xl font-bold text-white font-serif">{v}</p>
+                <p className="text-2xl font-bold text-white font-serif tabular-nums">{v}{s}</p>
                 <p className="text-xs text-slate-500 mt-0.5">{l}</p>
               </div>
             ))}
           </motion.div>
 
-          {/* socials */}
-          <motion.div variants={item} className="flex gap-3">
+          {/* Socials */}
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.1 }}
+            className="flex gap-3"
+          >
             {[
-              { href: SOCIAL.github,   Icon: GithubIcon,   label: 'GitHub' },
+              { href: SOCIAL.github,   Icon: GithubIcon,   label: 'GitHub'   },
               { href: SOCIAL.linkedin, Icon: LinkedinIcon, label: 'LinkedIn' },
             ].map(({ href, Icon, label }) => (
-              <a key={href} href={href} target="_blank" rel="noopener noreferrer" aria-label={label}
-                className="p-2.5 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-all duration-200">
+              <a
+                key={href}
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={label}
+                className="p-2.5 rounded-xl border border-white/10 text-slate-400 hover:text-white hover:border-white/20 transition-all duration-200"
+              >
                 <Icon size={19} />
               </a>
             ))}
           </motion.div>
-        </motion.div>
+        </div>
 
-        {/* ── Right: Phone mockup ── */}
+        {/* ── Right: Phone with mouse-reactive parallax ── */}
         <motion.div
           initial={{ opacity: 0, x: 50 }}
           animate={{ opacity: 1, x: 0 }}
@@ -128,15 +276,15 @@ export default function Hero() {
           {/* glow behind phone */}
           <div className="absolute inset-0 rounded-[50px] bg-violet-600/15 blur-3xl scale-110 pointer-events-none" />
 
-          {/* floating tags */}
+          {/* floating code tags */}
           {FLOAT_TAGS.map((t, i) => (
             <motion.span
               key={t.text}
               animate={{ y: [0, -10, 0] }}
               transition={{ duration: 3.5 + i * 0.4, repeat: Infinity, ease: 'easeInOut', delay: t.delay }}
               className={`absolute code-tag font-mono text-[11px] font-medium ${t.color} ${
-                i === 0 ? '-left-20 top-1/4' :
-                i === 1 ? '-right-16 top-1/3' :
+                i === 0 ? '-left-20 top-1/4'    :
+                i === 1 ? '-right-16 top-1/3'   :
                 i === 2 ? '-left-16 bottom-1/3' :
                           '-right-20 bottom-1/4'
               }`}
@@ -145,8 +293,9 @@ export default function Hero() {
             </motion.span>
           ))}
 
-          {/* phone */}
+          {/* Phone — rotateX/Y driven by mouse, y driven by looping float */}
           <motion.div
+            style={{ rotateX, rotateY, transformPerspective: 1200 }}
             animate={{ y: [0, -8, 0] }}
             transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
             className="phone-frame"
@@ -199,7 +348,7 @@ export default function Hero() {
                 ))}
               </div>
 
-              {/* bottom bar stats */}
+              {/* bottom stats */}
               <div className="flex justify-around mt-4 pt-3 border-t border-white/5">
                 {[['4', 'Apps'], ['9K+', 'Users'], ['4+', 'Years']].map(([v, l]) => (
                   <div key={l} className="text-center">

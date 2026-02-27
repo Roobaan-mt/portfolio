@@ -79,8 +79,8 @@ export default function Projects() {
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.35, delay: i * 0.07 }}
-                whileHover={{ y: -4 }}
-                className="glass rounded-2xl overflow-hidden flex flex-col hover:border-white/12 transition-colors duration-200"
+                whileHover={{ y: -8 }}
+                className="glass rounded-2xl overflow-hidden flex flex-col transition-[border-color,box-shadow] duration-300 hover:border-white/15 hover:shadow-[0_24px_60px_rgba(139,92,246,0.14)]"
               >
                 {/* card top: gradient banner + icon */}
                 <div className={`relative h-20 bg-gradient-to-br ${p.color} flex items-end px-5 pb-0`}>
