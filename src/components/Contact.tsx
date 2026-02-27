@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, Component } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MailIcon, PhoneIcon, MapPinIcon, SendIcon, MessageCircleIcon } from 'lucide-react';
 const Contact = () => {
   const [isVisible, setIsVisible] = useState(false);
@@ -9,6 +9,8 @@ const Contact = () => {
     subject: '',
     message: ''
   });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const {
       name,
@@ -19,18 +21,27 @@ const Contact = () => {
       [name]: value
     }));
   };
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const {
-      name,
-      email,
-      subject,
-      message
-    } = formState;
-    // Create mailto link
-    const mailtoLink = `mailto:roobaanmt@gmail.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\n${message}`)}`;
-    // Open email client
-    window.location.href = mailtoLink;
+    setSubmitting(true);
+    setSubmitStatus('idle');
+    try {
+      const res = await fetch('https://formspree.io/f/xwvnzvgo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formState),
+      });
+      if (res.ok) {
+        setSubmitStatus('success');
+        setFormState({ name: '', email: '', subject: '', message: '' });
+      } else {
+        setSubmitStatus('error');
+      }
+    } catch {
+      setSubmitStatus('error');
+    } finally {
+      setSubmitting(false);
+    }
   };
   // Animation on scroll
   useEffect(() => {
@@ -167,10 +178,20 @@ const Contact = () => {
                 </label>
                 <textarea id="message" name="message" rows={5} value={formState.message} onChange={handleChange} className="w-full px-4 py-3 border-2 border-royal-purple/20 dark:border-royal-gold/20 rounded-lg focus:ring-2 focus:ring-royal-gold focus:border-transparent bg-white/50 dark:bg-gray-800/50 text-gray-900 dark:text-white transition-all duration-300 resize-none" placeholder="Hello, I'm interested in working with you on..." required></textarea>
               </div>
-              <button type="submit" className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-gold relative overflow-hidden group">
+              {submitStatus === 'success' && (
+                <p className="mb-4 text-sm font-medium text-green-600 dark:text-green-400">
+                  Message sent! I'll get back to you soon.
+                </p>
+              )}
+              {submitStatus === 'error' && (
+                <p className="mb-4 text-sm font-medium text-red-600 dark:text-red-400">
+                  Something went wrong. Please try again or email me directly.
+                </p>
+              )}
+              <button type="submit" disabled={submitting} className="flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-lg transition-all duration-200 transform hover:scale-105 hover:shadow-gold relative overflow-hidden group disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100">
                 <span className="relative z-10 flex items-center gap-2">
                   <SendIcon size={18} />
-                  <span>Send Message</span>
+                  <span>{submitting ? 'Sending…' : 'Send Message'}</span>
                 </span>
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-royal-gold to-royal-purple opacity-0 group-hover:opacity-100 transition-opacity duration-200"></span>
               </button>
