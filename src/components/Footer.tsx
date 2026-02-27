@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { ArrowUpIcon } from 'lucide-react';
+import { SOCIAL } from '../data/social';
 const Footer = () => {
   const [isVisible, setIsVisible] = useState(false);
   const footerRef = useRef<HTMLDivElement>(null);
@@ -58,13 +59,13 @@ const Footer = () => {
           <div className="flex gap-8">
             {[{
             name: 'GitHub',
-            url: 'https://github.com/Roobaan'
+            url: SOCIAL.github
           }, {
             name: 'LinkedIn',
-            url: 'https://www.linkedin.com/in/roobaan-m-t-327075214'
+            url: SOCIAL.linkedin
           }, {
             name: 'Medium',
-            url: 'https://medium.com/@RoobaanMT'
+            url: SOCIAL.medium
           }].map((link, index) => <a key={index} href={link.url} className="text-gray-400 hover:text-royal-gold transition-all duration-300 hover:scale-110 transform animated-underline" target="_blank" rel="noopener noreferrer">
                 {link.name}
               </a>)}

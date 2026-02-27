@@ -189,7 +189,7 @@ const Projects = () => {
         willChange: 'transform, opacity'
       }}>
           <div className="flex flex-wrap gap-4 justify-center">
-            {['all', 'flutter', 'ios'].map(filter => <button key={filter} className={`px-8 py-3 rounded-full font-serif font-medium transform transition-all duration-200 hover:scale-105 ${activeFilter === filter ? 'bg-gradient-to-r from-royal-purple to-royal-gold text-white shadow-royal' : 'glass backdrop-blur-md text-gray-800 dark:text-gray-200 hover:shadow-royal'}`} onClick={() => {
+            {['all', 'flutter', 'ios'].map(filter => <button key={filter} className={`px-8 py-3 rounded-full font-serif font-medium transform transition-all duration-200 hover:scale-105 ${activeFilter === filter ? 'bg-gradient-to-r from-royal-purple to-royal-gold text-white shadow-royal' : 'glass backdrop-blur-md text-gray-800 dark:text-gray-200 border border-royal-purple/20 dark:border-royal-gold/20 hover:border-royal-purple/40 dark:hover:border-royal-gold/40 hover:shadow-royal'}`} onClick={() => {
             setActiveFilter(filter);
             setVisibleProjects(6); // Reset visible projects when filter changes
           }} style={{

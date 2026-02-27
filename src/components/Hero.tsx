@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef, memo } from 'react';
 import { ArrowDownIcon, GithubIcon, LinkedinIcon, DownloadIcon } from 'lucide-react';
 import profileImg from '../assets/profile.jpg';
+import { SOCIAL } from '../data/social';
 const Hero = () => {
   const [displayText, setDisplayText] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -111,6 +112,15 @@ const Hero = () => {
         <div ref={contentRef} className="md:w-1/2 mb-10 md:mb-0" style={{
         willChange: 'transform'
       }}>
+          <div className={`mb-4 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
+          transitionDelay: '0.2s',
+          willChange: 'transform, opacity'
+        }}>
+            <span className="inline-flex items-center gap-2 px-3 py-1 text-sm font-sans bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/25 rounded-full">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Open to opportunities
+            </span>
+          </div>
           <p className={`text-royal-purple dark:text-royal-gold font-serif font-semibold mb-2 text-lg transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
           transitionDelay: '0.3s',
           willChange: 'transform, opacity'
@@ -134,9 +144,9 @@ const Hero = () => {
           transitionDelay: '0.9s',
           willChange: 'transform, opacity'
         }}>
-            Crafting beautiful, intuitive mobile experiences with Flutter and
-            iOS. Turning ideas into user-friendly applications with royal
-            precision.
+            iOS and Flutter developer with 4+ years shipping production apps —
+            from banking tools used by 9,000+ employees to ride-hailing and
+            insurance platforms live on both stores.
           </p>
           <div className={`flex flex-wrap gap-4 transition-all duration-1000 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`} style={{
           transitionDelay: '1.1s',
@@ -159,13 +169,13 @@ const Hero = () => {
           transitionDelay: '1.3s',
           willChange: 'transform, opacity'
         }}>
-            <a href="https://github.com/Roobaan" className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
+            <a href={SOCIAL.github} className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
             willChange: 'transform'
           }}>
               <GithubIcon size={28} />
               <span className="sr-only">GitHub</span>
             </a>
-            <a href="https://www.linkedin.com/in/roobaan-m-t-327075214" className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
+            <a href={SOCIAL.linkedin} className="text-royal-purple dark:text-royal-gold hover:text-royal-purple-light dark:hover:text-royal-gold-light transition-all duration-300 transform hover:scale-125" target="_blank" rel="noopener noreferrer" style={{
             willChange: 'transform'
           }}>
               <LinkedinIcon size={28} />

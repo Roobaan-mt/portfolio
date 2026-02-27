@@ -161,7 +161,7 @@ const Skills = () => {
           value: '4+',
           label: 'Years Experience'
         }, {
-          value: '10+',
+          value: '15+',
           label: 'Projects Completed'
         }, {
           value: '3',
