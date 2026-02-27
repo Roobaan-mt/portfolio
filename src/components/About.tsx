@@ -9,7 +9,7 @@ const About = () => {
   const [isVisible, setIsVisible] = useState(false);
   const [animationStarted, setAnimationStarted] = useState(false);
   // Sample resume URL - this is a placeholder for a real resume
-  const resumeUrl = 'https://drive.google.com/file/d/1N-NjaNdSMKVqHzwfOsTj66BWY_-NLMhY/view?usp=sharing';
+  const resumeUrl = '/Roobaan_CV.pdf';
   // Optimized scroll animation with IntersectionObserver
   useEffect(() => {
     const options = {

@@ -86,7 +86,7 @@ const Header = () => {
         willChange: 'transform'
       }}>
           <span className="sr-only">Developer Portfolio</span>
-          Roobaaan M T
+          Roobaan M T
         </div>
         {/* Desktop Navigation */}
         <nav className="hidden md:flex space-x-8">
