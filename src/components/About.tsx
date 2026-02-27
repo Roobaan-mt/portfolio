@@ -1,152 +1,180 @@
-import React, { useEffect, useState, useRef, memo } from 'react';
-import { CodeIcon, SmartphoneIcon, GlobeIcon, BriefcaseIcon, DownloadIcon } from 'lucide-react';
-import profileImg from '../assets/profile.jpg';
-const About = () => {
-  const sectionRef = useRef<HTMLDivElement>(null);
-  const featuresRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-  const imageRef = useRef<HTMLDivElement>(null);
-  const [isVisible, setIsVisible] = useState(false);
-  const [animationStarted, setAnimationStarted] = useState(false);
-  // Sample resume URL - this is a placeholder for a real resume
-  const resumeUrl = '/Roobaan_CV.pdf';
-  // Optimized scroll animation with IntersectionObserver
-  useEffect(() => {
-    const options = {
-      root: null,
-      rootMargin: '0px',
-      threshold: 0.1
-    };
-    const handleIntersect = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          // Only set visible once to avoid unnecessary re-renders
-          if (!isVisible && entry.target === sectionRef.current) {
-            setIsVisible(true);
-            // Start staggered animations after a short delay
-            setTimeout(() => setAnimationStarted(true), 100);
-          }
-          // Add animation class
-          entry.target.classList.add('animate-in');
-          // Stop observing this element
-          observer.unobserve(entry.target);
-        }
-      });
-    };
-    const observer = new IntersectionObserver(handleIntersect, options);
-    if (sectionRef.current) {
-      observer.observe(sectionRef.current);
-    }
-    // Observe feature cards with staggered animation
-    const featureElements = featuresRef.current?.querySelectorAll('.feature-card');
-    featureElements?.forEach((el, i) => {
-      el.classList.add('opacity-0', 'translate-y-3');
-      // Stagger animation delay
-      el.style.transitionDelay = `${i * 0.15}s`;
-      observer.observe(el);
-    });
-    return () => observer.disconnect();
-  }, [isVisible]);
-  return <section id="about" className="py-20 md:py-32 bg-white dark:bg-royal-black w-full transition-colors duration-500 relative overflow-hidden">
-      {/* Background decorations with cinematic animations */}
-      <div className={`absolute top-0 right-0 w-96 h-96 bg-royal-purple/5 dark:bg-royal-purple/10 rounded-full blur-3xl transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
-      transformOrigin: 'center',
-      willChange: animationStarted ? 'auto' : 'transform, opacity'
-    }}></div>
-      <div className={`absolute bottom-0 left-0 w-96 h-96 bg-royal-gold/5 dark:bg-royal-gold/10 rounded-full blur-3xl transition-[transform,opacity] duration-600 ease-out ${isVisible ? 'opacity-60 scale-100' : 'opacity-0 scale-50'}`} style={{
-      transformOrigin: 'center',
-      transitionDelay: '0.3s',
-      willChange: animationStarted ? 'auto' : 'transform, opacity'
-    }}></div>
-      <div className="container mx-auto px-4 md:px-6 relative z-10">
-        <div ref={sectionRef} className="text-center mb-16 opacity-0 translate-y-3 transition-[transform,opacity] duration-500 ease-out" style={{
-        willChange: animationStarted ? 'auto' : 'transform, opacity'
-      }}>
-          <h2 className="text-4xl md:text-5xl font-serif font-bold text-royal-purple dark:text-royal-gold mb-4">
-            About Me
-          </h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-royal-purple to-royal-gold mx-auto mb-6"></div>
-        </div>
-        <div className="flex flex-col md:flex-row gap-16 items-center">
-          <div ref={contentRef} className={`md:w-1/2 opacity-0 translate-y-3 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'animate-in' : ''}`} style={{
-          transitionDelay: '0.3s',
-          willChange: animationStarted ? 'auto' : 'transform, opacity'
-        }}>
-            <div className="space-y-6">
-              {["I'm an iOS and Flutter developer with 4+ years of experience building and shipping production mobile apps. My work spans native iOS development with Swift, UIKit, and SwiftUI through to cross-platform Flutter — including specialized implementation of the ZifMP SDK across iOS, Android, and Flutter platforms.", "Based in Chennai, I've worked with GAVS Technologies, SivaCerulean Technologies, and Innovix Software Technologies, contributing to apps now live on the App Store and Google Play. I focus on reliable API integration, offline-capable data layers, and UIs that hold up on real devices."].map((paragraph, index) => <p key={index} className={`text-lg text-gray-800 dark:text-gray-200 font-sans leading-relaxed transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
-              transitionDelay: `${0.5 + index * 0.2}s`,
-              willChange: animationStarted ? 'auto' : 'transform, opacity'
-            }}>
-                  {paragraph}
-                </p>)}
+import React, { useRef } from 'react';
+import { motion, useInView } from 'framer-motion';
+import { MapPinIcon, BriefcaseIcon, CodeIcon, SmartphoneIcon } from 'lucide-react';
+
+const item = {
+  hidden: { opacity: 0, y: 20 },
+  show:   { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
+};
+
+const COMPANIES = [
+  { name: 'GAVS Technologies',              role: 'iOS Developer',              period: '2020 – 2021' },
+  { name: 'Innovix Software Technologies',  role: 'iOS & Flutter Developer',    period: '2021 – 2022' },
+  { name: 'SivaCerulean Technologies',      role: 'iOS & Flutter Developer',    period: '2022 – Present' },
+];
+
+const STATS = [
+  { value: 4,  suffix: '+', label: 'Years',    color: '#8B5CF6', r: 38 },
+  { value: 15, suffix: '+', label: 'Projects', color: '#06B6D4', r: 28 },
+  { value: 4,  suffix: '',  label: 'Apps',     color: '#F59E0B', r: 18 },
+];
+
+function RingStats() {
+  const ref   = useRef<SVGSVGElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+
+  const size = 100;
+  const cx   = 50;
+  const cy   = 50;
+
+  return (
+    <svg ref={ref} viewBox="0 0 100 100" className="w-48 h-48 mx-auto">
+      {STATS.map((s) => {
+        const circ  = 2 * Math.PI * s.r;
+        const dash  = inView ? circ * (Math.min(s.value, 15) / 15) : 0;
+        return (
+          <g key={s.label}>
+            <circle className="ring-track" cx={cx} cy={cy} r={s.r} strokeWidth="6" />
+            <circle
+              className="ring-fill"
+              cx={cx} cy={cy} r={s.r}
+              strokeWidth="6"
+              stroke={s.color}
+              strokeDasharray={circ}
+              strokeDashoffset={inView ? circ - dash : circ}
+              style={{ transition: 'stroke-dashoffset 1.4s cubic-bezier(0.4,0,0.2,1) 0.3s' }}
+            />
+          </g>
+        );
+      })}
+      {/* center text */}
+      <text x="50" y="47" textAnchor="middle" fill="white" fontSize="9" fontWeight="700" fontFamily="Playfair Display, serif">
+        4+
+      </text>
+      <text x="50" y="56" textAnchor="middle" fill="#64748B" fontSize="6" fontFamily="Inter, sans-serif">
+        years
+      </text>
+    </svg>
+  );
+}
+
+export default function About() {
+  const ref    = useRef<HTMLElement>(null);
+  const inView = useInView(ref, { once: true, margin: '-80px' });
+
+  return (
+    <section id="about" ref={ref} className="py-24 md:py-32 relative overflow-hidden">
+      <div className="orb w-[400px] h-[400px] right-0 top-0 bg-cyan-500/6" />
+
+      <div className="max-w-6xl mx-auto px-6">
+        {/* heading */}
+        <motion.div
+          initial="hidden" animate={inView ? 'show' : 'hidden'}
+          variants={{ hidden: {}, show: { transition: { staggerChildren: 0.1 } } }}
+          className="mb-16"
+        >
+          <motion.span variants={item} className="section-label block mb-3">About Me</motion.span>
+          <motion.h2 variants={item} className="text-4xl md:text-5xl font-serif font-bold text-white">
+            Building apps that <span className="gradient-text">matter</span>
+          </motion.h2>
+          <motion.div variants={item} className="section-divider" />
+        </motion.div>
+
+        {/* 3-column grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr_auto] gap-10 lg:gap-12 items-start">
+
+          {/* Bio */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={inView ? { opacity: 1, x: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="space-y-5"
+          >
+            <p className="text-slate-300 leading-relaxed">
+              I'm an iOS and Flutter developer with 4+ years of experience building and shipping
+              production mobile apps. My work spans native iOS development with Swift, UIKit, and
+              SwiftUI through to cross-platform Flutter — including specialized implementation of
+              the ZifMP SDK across iOS, Android, and Flutter platforms.
+            </p>
+            <p className="text-slate-400 leading-relaxed">
+              Based in Chennai, I focus on reliable API integration, offline-capable data layers,
+              and UIs that hold up on real devices.
+            </p>
+
+            <div className="flex items-center gap-2 text-slate-500 text-sm">
+              <MapPinIcon size={14} />
+              <span>Chennai, India</span>
             </div>
-            <div className={`mt-8 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
-            transitionDelay: '1.1s',
-            willChange: animationStarted ? 'auto' : 'transform, opacity'
-          }}>
-              <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="resume-button inline-flex items-center gap-2 px-8 py-4 bg-gradient-to-r from-royal-purple to-royal-gold text-white font-medium rounded-full hover:shadow-royal transition-all duration-200 transform hover:translate-y-[-5px] hover:scale-105" style={{
-              willChange: 'transform, box-shadow'
-            }}>
-                <DownloadIcon size={18} />
-                <span>View Full Resume</span>
-              </a>
+
+            {/* feature cards */}
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              {[
+                { icon: <SmartphoneIcon size={16} />, label: 'iOS Native',    sub: 'Swift · UIKit · SwiftUI' },
+                { icon: <CodeIcon size={16} />,        label: 'Flutter',       sub: 'Dart · Cross-platform' },
+                { icon: <BriefcaseIcon size={16} />,   label: 'ZifMP SDK',    sub: 'iOS · Android · Flutter' },
+                { icon: <MapPinIcon size={16} />,      label: 'Production',   sub: '4 live App Store apps' },
+              ].map(f => (
+                <div key={f.label}
+                  className="glass rounded-xl p-4 hover:border-white/12 transition-colors duration-200">
+                  <div className="text-violet-400 mb-2">{f.icon}</div>
+                  <p className="text-white text-sm font-semibold">{f.label}</p>
+                  <p className="text-slate-500 text-xs mt-0.5">{f.sub}</p>
+                </div>
+              ))}
             </div>
-          </div>
-          <div ref={featuresRef} className="md:w-1/2">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {[{
-              icon: <SmartphoneIcon size={28} className="text-white" />,
-              title: 'Mobile Development',
-              description: 'Creating intuitive, responsive, and feature-rich mobile applications for iOS and Android platforms.',
-              bgClass: 'bg-gradient-to-br from-royal-purple to-royal-purple-light dark:from-royal-purple-dark dark:to-royal-purple'
-            }, {
-              icon: <CodeIcon size={28} className="text-white" />,
-              title: 'Flutter Expertise',
-              description: "Building cross-platform applications with Flutter's reactive framework and Dart programming.",
-              bgClass: 'bg-gradient-to-br from-royal-blue to-royal-blue-light dark:from-royal-blue-dark dark:to-royal-blue'
-            }, {
-              icon: <GlobeIcon size={28} className="text-royal-black" />,
-              title: 'iOS Development',
-              description: 'Crafting native iOS applications with Swift, UIKit, and SwiftUI for exceptional user experiences.',
-              bgClass: 'bg-gradient-to-br from-royal-gold to-royal-gold-light dark:from-royal-gold-dark dark:to-royal-gold'
-            }, {
-              icon: <BriefcaseIcon size={28} className="text-white" />,
-              title: 'Professional Experience',
-              description: 'Worked with GAVS Technologies, SivaCerulean Technologies, and Innovix Software Technologies.',
-              bgClass: 'bg-gradient-to-br from-royal-purple-light to-royal-blue-light dark:from-royal-purple dark:to-royal-blue'
-            }].map((feature, index) => <div key={index} className="feature-card glass backdrop-blur-md p-8 rounded-xl shadow-elegant transform transition-[transform,opacity] duration-400 ease-out card-3d" style={{
-              willChange: animationStarted ? 'auto' : 'transform, opacity, box-shadow',
-              transformOrigin: 'center'
-            }}>
-                  <div className={`${feature.bgClass} p-3 rounded-full w-16 h-16 flex items-center justify-center mb-6 shadow-royal transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'scale-100 opacity-100' : 'scale-0 opacity-0'}`} style={{
-                transitionDelay: `${0.6 + index * 0.15}s`,
-                willChange: animationStarted ? 'auto' : 'transform, opacity'
-              }}>
-                    {feature.icon}
-                  </div>
-                  <h3 className={`text-xl font-serif font-semibold mb-3 text-gray-900 dark:text-white transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
-                transitionDelay: `${0.7 + index * 0.15}s`,
-                willChange: animationStarted ? 'auto' : 'transform, opacity'
-              }}>
-                    {feature.title}
-                  </h3>
-                  <p className={`text-gray-700 dark:text-gray-300 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`} style={{
-                transitionDelay: `${0.8 + index * 0.15}s`,
-                willChange: animationStarted ? 'auto' : 'transform, opacity'
-              }}>
-                    {feature.description}
-                  </p>
-                </div>)}
+          </motion.div>
+
+          {/* Companies */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={inView ? { opacity: 1, y: 0 } : {}}
+            transition={{ duration: 0.6, delay: 0.3 }}
+          >
+            <p className="text-sm font-semibold text-slate-400 mb-5 flex items-center gap-2">
+              <BriefcaseIcon size={14} className="text-violet-400" /> Experience
+            </p>
+            <div className="relative pl-4">
+              {/* line */}
+              <div className="absolute left-0 top-2 bottom-2 w-px bg-gradient-to-b from-violet-600 via-cyan-600 to-transparent" />
+
+              {COMPANIES.map((c, i) => (
+                <motion.div
+                  key={c.name}
+                  initial={{ opacity: 0, x: -12 }}
+                  animate={inView ? { opacity: 1, x: 0 } : {}}
+                  transition={{ delay: 0.4 + i * 0.15 }}
+                  className="mb-6 last:mb-0 relative"
+                >
+                  {/* dot */}
+                  <div className="absolute -left-[17px] top-1.5 w-2 h-2 rounded-full bg-violet-500 ring-2 ring-[#080811]" />
+                  <p className="text-white font-semibold text-sm">{c.name}</p>
+                  <p className="text-violet-400 text-xs mt-0.5 font-mono">{c.role}</p>
+                  <p className="text-slate-600 text-xs mt-0.5">{c.period}</p>
+                </motion.div>
+              ))}
             </div>
-          </div>
+          </motion.div>
+
+          {/* Rings */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={inView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="flex flex-col items-center gap-4"
+          >
+            <RingStats />
+            <div className="flex gap-4">
+              {STATS.map(s => (
+                <div key={s.label} className="text-center">
+                  <div className="w-2.5 h-2.5 rounded-full mx-auto mb-1" style={{ background: s.color }} />
+                  <p className="text-white text-xs font-bold">{s.value}{s.suffix}</p>
+                  <p className="text-slate-600 text-[10px]">{s.label}</p>
+                </div>
+              ))}
+            </div>
+          </motion.div>
         </div>
       </div>
-      <style jsx>{`
-        .animate-in {
-          opacity: 1 !important;
-          transform: translateY(0) !important;
-        }
-      `}</style>
-    </section>;
-};
-export default memo(About);
+    </section>
+  );
+}
