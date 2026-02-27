@@ -112,15 +112,7 @@ const Hero = () => {
         <div ref={contentRef} className="md:w-1/2 mb-10 md:mb-0" style={{
         willChange: 'transform'
       }}>
-          <div className={`mb-4 transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
-          transitionDelay: '0.2s',
-          willChange: animationStarted ? 'auto' : 'transform, opacity'
-        }}>
-            <span className="inline-flex items-center gap-2 px-3 py-1 text-sm font-sans bg-green-500/10 text-green-700 dark:text-green-400 border border-green-500/25 rounded-full">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Open to opportunities
-            </span>
-          </div>
+
           <p className={`text-royal-purple dark:text-royal-gold font-serif font-semibold mb-2 text-lg transition-[transform,opacity] duration-500 ease-out ${animationStarted ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-3'}`} style={{
           transitionDelay: '0.3s',
           willChange: animationStarted ? 'auto' : 'transform, opacity'
